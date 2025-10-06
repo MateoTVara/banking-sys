@@ -6,7 +6,8 @@
   <title>{% block title %}Sistema Bancario{% endblock %}</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="{% static 'css/styles.css' %}?v=1">
-  <script src="{% static 'js/script.js' %}?v=1" defer></script>
+  {% block styles %} {% endblock %}
+  <script type="module" src="{% static 'js/script.js' %}?v=1" defer></script>
 </head>
 <body>
   <header>

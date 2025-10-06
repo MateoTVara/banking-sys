@@ -1,4 +1,9 @@
 {% extends 'bankingsys/index.html' %}
+{% load static %}
+
+{% block styles %}
+  <link rel="stylesheet" href="{% static 'css/client/register.css' %}?v=1">
+{% endblock %}
 
 {% block header %}
   <h1>Sistema Bancario - Registro de Clientes</h1>

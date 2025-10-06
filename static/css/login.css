@@ -1,0 +1,64 @@
+/* Login page */
+
+body.login-body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+body.login-body > * {
+  border: none; /* Remove debug border */
+}
+
+.login-main {
+  border: 1px solid black;
+  padding: 16px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-main h1 {
+  margin-bottom: 16px;
+}
+
+.login-main form {
+  display: flex;
+  flex-direction: column;
+}
+
+.login-main form label {
+  margin-top: 8px;
+}
+
+.login-main form input {
+  margin-top: 4px;
+  padding: 4px 8px;
+  border: 1px solid black;
+}
+
+.login-main form input:focus {
+  outline: 2px solid #3498db;
+}
+
+.login-main form button {
+  margin-top: 16px;
+  padding: 8px;
+  border: 1px solid black;
+  background-color: transparent;
+  cursor: pointer;
+}
+
+.messages {
+  margin-bottom: 16px;
+}
+
+.message-error {
+  color: red;
+}
+
+.message-success {
+  color: green;
+}

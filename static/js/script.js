@@ -1,19 +1,23 @@
-const navToggle = document.querySelector('.nav-toggle');
-const nav = document.querySelector('nav');
+import { DomManager } from './managers/index.js';
 
-navToggle.addEventListener('click', () => {
-  document.body.classList.toggle('active-nav');
-  nav.classList.toggle('active');
-});
+// const navToggle = document.querySelector('.nav-toggle');
+// const nav = document.querySelector('nav');
 
-nav.addEventListener("click", (e) => {
-  if (e.target.tagName === "P") {
-    const navItem = e.target.parentElement.querySelector(".nav-item");
-    if (navItem) {
-      navItem.classList.toggle("active");
-    }
-  }
-});
+// navToggle.addEventListener('click', () => {
+//   document.body.classList.toggle('active-nav');
+//   nav.classList.toggle('active');
+// });
+
+// nav.addEventListener("click", (e) => {
+//   if (e.target.tagName === "P") {
+//     const navItem = e.target.parentElement.querySelector(".nav-item");
+//     if (navItem) {
+//       navItem.classList.toggle("active");
+//     }
+//   }
+// });
+
+DomManager.initEventListener();
 
 window.addEventListener('DOMContentLoaded', () => {
   if (window.location.pathname === '/clients/register/') {
