@@ -8,3 +8,6 @@ def client_list(request):
         'clients': clients
     }
     return render(request, 'bankingsys/client/clients.html', context)
+
+def client_register(request):
+    return render(request, 'bankingsys/client/register.html')

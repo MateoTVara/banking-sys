@@ -60,7 +60,7 @@ a {
 body {
   height: 100dvh;
   display: grid;
-  grid-template-columns: 0px 1fr;
+  grid-template-columns: 0fr 1fr;
   grid-template-rows: auto 1fr auto;
   grid-template-areas:
     "header header"
@@ -70,7 +70,13 @@ body {
 }
 
 body.active-nav {
-  grid-template-columns: 220px 1fr;
+  grid-template-columns: 0.2fr 1fr;
+}
+
+@media (max-width: 600px) {
+  body.active-nav {
+    grid-template-columns: 0.5fr 1fr;
+  }
 }
 
 /* Header */
@@ -189,6 +195,8 @@ nav > ul > li > .nav-item > li::before {
 main {
   grid-area: main;
 
+  width: 100%;
+  height: 100%;
   padding: 8px 16px;
   overflow-y: auto;
   scrollbar-width: thin;
@@ -236,6 +244,7 @@ body.login-body > * {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
 }
 
 .login-main h1 {
@@ -279,4 +288,75 @@ body.login-body > * {
 
 .message-success {
   color: green;
+}
+
+/* Clients Register */
+
+main.cliente-register-body {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  justify-content: center;
+}
+
+main > #register-client-form {
+  --inline-padding: 32px;
+  --block-padding: 16px;
+  width: calc(clamp(250px, 30%, 400px) + var(--inline-padding) * 2);
+  height: calc(clamp(350px, 75%, 425px) + var(--block-padding) * 2);
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+  scrollbar-width: thin;
+  padding: var(--block-padding) var(--inline-padding);
+  border: 1px solid black;
+  margin-inline: auto;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: center;
+  gap: 24px;
+}
+
+main > #register-client-form button {
+  height: calc(1rem + 15px);
+  padding: 0px 8px;
+  border: 1px solid black;
+  background-color: transparent;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+main > #register-client-form button:hover {
+  background-color: #f2f2f2;
+}
+
+main > #register-client-form > *:first-child {
+  margin-top: auto;
+}
+
+main > #register-client-form > *:last-child {
+  margin-bottom: auto;
+}
+
+main > #register-client-form > div:nth-child(2) {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 12px;
+}
+
+main > #register-client-form > div:nth-child(2) > div {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  row-gap: 4px;
+  column-gap: 64px;
+}
+
+main > #register-client-form > div:nth-child(2) > div > * {
+  flex: 1;
 }

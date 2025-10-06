@@ -1,0 +1,39 @@
+{% extends 'bankingsys/index.html' %}
+
+{% block header %}
+  <h1>Sistema Bancario - Registro de Clientes</h1>
+{% endblock %}
+
+{% block content %}
+  <form method="post" id="register-client-form">
+    <div>
+      <div>
+        <input type="text" id="ruc-dni" placeholder="RUC o DNI">
+        <button type="button">B</button>
+      </div>
+    </div>
+    <div class="retrived-data">
+      <div>
+        <p>Nombre:</p>
+        <p id="client-name">Prueba</p>
+      </div>
+      <div>
+        <p>Tipo de Cliente:</p>
+        <p id="client-type">Prueba</p>
+      </div>
+      <div>
+        <label for="client-address">Dirección:</label>
+        <input type="text" id="client-address">
+      </div>
+      <div>
+        <label for="client-phone">Teléfono:</label>
+        <input type="number" id="client-phone">
+      </div>
+      <div>
+        <label for="client-email">Email:</label>
+        <input type="email" id="client-email">
+      </div>
+    </div>
+    <button type="submit">Registrar Cliente</button>
+  </form>
+{% endblock %}

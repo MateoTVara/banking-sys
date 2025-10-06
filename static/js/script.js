@@ -14,3 +14,9 @@ nav.addEventListener("click", (e) => {
     }
   }
 });
+
+window.addEventListener('DOMContentLoaded', () => {
+  if (window.location.pathname === '/clients/register/') {
+    document.querySelector('main').classList.add('cliente-register-body');
+  }
+});
