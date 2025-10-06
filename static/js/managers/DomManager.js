@@ -1,3 +1,5 @@
+import { ClientManager } from "./doms/clients/index.js";
+
 export class DomManager {
   constructor() {}
 
@@ -53,6 +55,12 @@ export class DomManager {
         if (navItem) {
           navItem.classList.toggle("active");
         }
+      }
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+      if (window.location.pathname === '/clients/register/') {
+        ClientManager.initRegisterMngr();
       }
     });
   }
