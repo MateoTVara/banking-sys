@@ -1,0 +1,43 @@
+{% extends 'bankingsys/index.html' %}
+
+{% block header %}
+  <h1>Sistema Bancario - Vista de Clientes</h1>
+{% endblock %}
+
+{% block content %}
+  {% if clients %}
+    <section>
+      <h1>Vista de Clientes</h1>
+      <table>
+        <thead>
+          <tr>
+            <th>Tipo de Cliente</th>
+            <th>DNI/RUC</th>
+            <th>Nombre</th>
+            <th>Teléfono</th>
+            <th>Email</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for client in clients %}
+          <tr>
+            <td>{{ client.client_type }}</td>
+            <td>{% if client.dni %}{{ client.dni }}{% else %}{{ client.ruc }}{% endif %}</td>
+            <td>{{ client.name }}</td>
+            <td>{{ client.phone }}</td>
+            <td>{{ client.email }}</td>
+            <td>
+              {% comment %} <a href="{% url 'client_detail' client.id %}">View</a> |
+              <a href="{% url 'client_edit' client.id %}">Edit</a> |
+              <a href="{% url 'client_delete' client.id %}">Delete</a> {% endcomment %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+  {% else %}
+    <p>No hay clientes disponibles.</p>
+  {% endif %}
+{% endblock %}

@@ -1,0 +1,54 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{% block title %}Sistema Bancario{% endblock %}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{% static 'css/styles.css' %}?v=1">
+  <script src="{% static 'js/script.js' %}?v=1" defer></script>
+</head>
+<body>
+  <header>
+    <button class="nav-toggle" aria-expanded="false" aria-controls="nav-menu">≡</button>
+    {% block header %}
+      <h1>Sistema Bancario</h1>
+      {% if messages %}
+        <div class="messages">
+          {% for message in messages %}
+            {{ message }}
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endblock %}
+  </header>
+  <nav>
+    {% block nav %}
+    <ul>
+      <li><a href="{% url 'bankingsys:index' %}">Home</a></li>
+      <li>
+        <p>Listas</p>
+        <ul class="nav-item">
+          <li><a href="{% url 'bankingsys:tests' %}">Pruebas</a></li>
+          <li><a href="{% url 'bankingsys:users' %}">Usuarios</a></li>
+          <li><a href="{% url 'bankingsys:clients' %}">Clientes</a></li>
+          <li><a href="{% url 'bankingsys:accounts' %}">Cuentas</a></li>
+          <li><a href="{% url 'bankingsys:judicial_holds' %}">Embargos Judiciales</a></li>
+          <li><a href="{% url 'bankingsys:account_movements' %}">Movimientos de Cuenta</a></li>
+        </ul>
+      </li>
+      <li><a href="{% url 'bankingsys:logout' %}">Logout</a></li>
+    </ul>
+    {% endblock %}
+  </nav>
+  <main>
+    {% block content %}
+    <h2>Bienvenido al Sistema Bancario</h2>
+    <p>Esta es la página principal de la aplicación del sistema bancario.</p>
+    {% endblock %}
+  </main>
+  <footer>
+    {% block footer %}© 2025 Sistema Bancario{% endblock %}
+  </footer>
+</body>
+</html>

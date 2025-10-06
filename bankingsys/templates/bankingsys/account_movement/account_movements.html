@@ -1,0 +1,43 @@
+{% extends 'bankingsys/index.html' %}
+
+{% block header %}
+  <h1>Sistema Bancario - Vista de Movimientos de Cuenta</h1>
+{% endblock %}
+
+{% block content %}
+  {% if account_movements %}
+    <section>
+      <h1>Vista de Movimientos de Cuenta</h1>
+      <table>
+        <thead>
+          <tr>
+            <th>Cuenta</th>
+            <th>Tipo de Movimiento</th>
+            <th>Cantidad</th>
+            <th>Moneda</th>
+            <th>Origen de Fondos</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for account_movement in account_movements %}
+          <tr>
+            <td>{{ account_movement.account }}</td>
+            <td>{{ account_movement.movement_type }}</td>
+            <td>{{ account_movement.amount }}</td>
+            <td>{{ account_movement.currency }}</td>
+            <td>{{ account_movement.origin_of_funds }}</td>
+            <td>
+              {% comment %} <a href="{% url 'user_detail' user.id %}">View</a> |
+              <a href="{% url 'user_edit' user.id %}">Edit</a> |
+              <a href="{% url 'user_delete' user.id %}">Delete</a> {% endcomment %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+  {% else %}
+    <p>No hay movimientos de cuenta disponibles.</p>
+  {% endif %}
+{% endblock %}

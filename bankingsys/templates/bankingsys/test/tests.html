@@ -1,0 +1,35 @@
+{% extends 'bankingsys/index.html' %}
+
+{% block header %}
+  <h1>Banking System - Test View</h1>
+{% endblock %}
+
+{% block content %}
+
+{% if tests %}
+  <section>
+    <h1>Test View</h1>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Created At</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for test in tests %}
+        <tr>
+          <td>{{ test.id }}</td>
+          <td>{{ test.name }}</td>
+          <td>{{ test.created_at }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+{% else %}
+  <p>No tests available.</p>
+{% endif %}
+
+{% endblock %}

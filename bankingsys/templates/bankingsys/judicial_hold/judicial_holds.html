@@ -1,0 +1,41 @@
+{% extends 'bankingsys/index.html' %}
+
+{% block header %}
+  <h1>Sistema Bancario - Vista de Embargos Judiciales</h1>
+{% endblock %}
+
+{% block content %}
+  {% if judicial_holds %}
+    <section>
+      <h1>Vista de Embargos Judiciales</h1>
+      <table>
+        <thead>
+          <tr>
+            <th>Cuenta</th>
+            <th>Tipo de embargo</th>
+            <th>Cantidad</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for judicial_hold in judicial_holds %}
+          <tr>
+            <td>{{ judicial_hold.account }}</td>
+            <td>{{ judicial_hold.hold_type }}</td>
+            <td>{{ judicial_hold.amount }}</td>
+            <td>{{ judicial_hold.is_active }}</td>
+            <td>
+              {% comment %} <a href="{% url 'user_detail' user.id %}">View</a> |
+              <a href="{% url 'user_edit' user.id %}">Edit</a> |
+              <a href="{% url 'user_delete' user.id %}">Delete</a> {% endcomment %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+  {% else %}
+    <p>No hay embargos judiciales disponibles.</p>
+  {% endif %}
+{% endblock %}

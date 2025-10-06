@@ -1,0 +1,282 @@
+/* styles.css */
+
+@font-face {
+  font-family: 'Baloo 2';
+  src: url('../assets/fonts/Baloo2-Regular.woff2') format('woff2'),
+      url('../assets/fonts/Baloo2-Regular.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* reset */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+body {
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  font-family: 'Baloo 2';
+}
+
+body > * {
+  border: 1px solid black; /* Debug */
+}
+
+img, picture, video, canvas, svg {
+  display: block;
+  max-width: 100%;
+}
+
+input, button, textarea, select {
+  font: inherit;
+}
+
+p, h1, h2, h3, h4, h5, h6 {
+  overflow-wrap: break-word;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  text-wrap: balance;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* start */
+
+body {
+  height: 100dvh;
+  display: grid;
+  grid-template-columns: 0px 1fr;
+  grid-template-rows: auto 1fr auto;
+  grid-template-areas:
+    "header header"
+    "nav main"
+    "footer footer";
+  transition: grid-template-columns 0.3s ease;
+}
+
+body.active-nav {
+  grid-template-columns: 220px 1fr;
+}
+
+/* Header */
+
+header {
+  grid-area: header;
+  padding: 4px 16px;
+
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+header button:first-child {
+  background-color: transparent;
+  border: none;
+  width: 36px;
+  height: 36px;
+  font-size: 24px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+header > div.messages {
+  margin-left: auto;
+  margin-bottom: 0;
+}
+
+/* Navigation */
+
+nav {
+  grid-area: nav;
+  min-width: 0;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  padding: 0;
+  border: none;
+  opacity: 0;
+  transition: opacity 0.3s ease, padding 0.3s ease, border 0.3s ease;
+}
+
+nav.active {
+  padding: 1rem;
+  border: 1px solid black;
+  opacity: 1;
+}
+
+nav > ul {
+  display: flex;
+  flex-direction: column;
+  list-style: none;
+  padding: 0;
+  min-height: 100%;
+}
+
+nav > ul p {
+  width: fit-content;
+}
+
+nav > ul a,
+nav > ul p {
+  position: relative;
+  cursor: pointer;
+}
+
+nav > ul a::after,
+nav > ul p::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 2px;
+  width: 0;
+  background: black;
+  transition: width 0.25s;
+}
+
+nav > ul a:hover::after,
+nav > ul p:hover::after {
+  width: 100%;
+}
+
+nav > ul > li {
+  margin-bottom: 8px;
+}
+
+nav > ul > li:last-child {
+  margin-top: auto;
+}
+
+nav > ul > li > .nav-item {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease, opacity 0.3s ease, margin 0.3s ease;
+  padding: 2px 0;
+  list-style-type: disc;
+}
+
+nav > ul > li > .nav-item.active {
+  max-height: 500px;
+  opacity: 1;
+  margin-left: 2px;
+}
+
+nav > ul > li > .nav-item > li {
+  list-style: none;
+}
+
+nav > ul > li > .nav-item > li::before {
+  content: "- ";
+}
+
+/* Main content */
+
+main {
+  grid-area: main;
+
+  padding: 8px 16px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+main > section > table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+main > section > table th {
+  text-align: left;
+}
+
+main > section > table th,
+main > section > table td {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+}
+
+/* Footer */
+
+footer {
+  grid-area: footer;
+  padding: 8px;
+  text-align: center;
+}
+
+/* Login page */
+
+body.login-body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+body.login-body > * {
+  border: none; /* Remove debug border */
+}
+
+.login-main {
+  border: 1px solid black;
+  padding: 16px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.login-main h1 {
+  margin-bottom: 16px;
+}
+
+.login-main form {
+  display: flex;
+  flex-direction: column;
+}
+
+.login-main form label {
+  margin-top: 8px;
+}
+
+.login-main form input {
+  margin-top: 4px;
+  padding: 4px 8px;
+  border: 1px solid black;
+}
+
+.login-main form input:focus {
+  outline: 2px solid #3498db;
+}
+
+.login-main form button {
+  margin-top: 16px;
+  padding: 8px;
+  border: 1px solid black;
+  background-color: transparent;
+  cursor: pointer;
+}
+
+.messages {
+  margin-bottom: 16px;
+}
+
+.message-error {
+  color: red;
+}
+
+.message-success {
+  color: green;
+}

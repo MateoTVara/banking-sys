@@ -1,0 +1,43 @@
+{% extends 'bankingsys/index.html' %}
+
+{% block header %}
+  <h1>Sistema Bancario - Vista de Cuentas</h1>
+{% endblock %}
+
+{% block content %}
+  {% if accounts %}
+    <section>
+      <h1>Vista de Cuentas</h1>
+      <table>
+        <thead>
+          <tr>
+            <th>Cliente</th>
+            <th>Tipo de Cuenta</th>
+            <th>Moneda</th>
+            <th>Saldo</th>
+            <th>Fecha de Apertura</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for account in accounts %}
+          <tr>
+            <td>{{ account.client }}</td>
+            <td>{{ account.account_type }}</td>
+            <td>{{ account.currency }}</td>
+            <td>{{ account.balance }}</td>
+            <td>{{ account.opened_at }}</td>
+            <td>
+              {% comment %} <a href="{% url 'account_detail' account.id %}">View</a> |
+              <a href="{% url 'account_edit' account.id %}">Edit</a> |
+              <a href="{% url 'account_delete' account.id %}">Delete</a> {% endcomment %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </section>
+  {% else %}
+    <p>No hay cuentas disponibles.</p>
+  {% endif %}
+{% endblock %}
