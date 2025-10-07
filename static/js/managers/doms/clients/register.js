@@ -4,17 +4,7 @@ export class ClientRegisterManager {
   constructor() {}
 
   static #NE = 'No encontrado';
-
-
-  /** 
-   * Clear form inputs and set initial state
-   */
-  static #clearForm() {
-    document.querySelector('main').classList.add('cliente-register-body');
-    document.querySelectorAll("#register-client-form input").forEach(input => {
-      input.value = '';
-    });
-  }
+  static #stagedRucDni = '';
 
 
 
@@ -24,6 +14,7 @@ export class ClientRegisterManager {
    */
   static #setupDomElements() {
     return DomManager.selectDomElements({
+      form: '#register-client-form',
       searchButton: '#register-client-form button[type="button"]',
       rucDniInput: '#ruc-dni',
       nameField: '#client-name',
@@ -34,35 +25,13 @@ export class ClientRegisterManager {
 
 
 
-  /**
-   * Initialize the search button click event listener
-   * @param {Object} elements - An object containing references to the DOM elements
+  /** 
+   * Clear form inputs and set initial state
    */
-  static #initSearchButtonListener(elements) {
-    const {searchButton, rucDniInput, nameField, clientTypeField, addressInput} = elements;
-
-    searchButton.addEventListener('click', async () => {
-      if (rucDniInput.value.trim().length !== 8 && rucDniInput.value.trim().length !== 11) {
-        rucDniInput.setCustomValidity('Ingrese un RUC o DNI válido');
-        rucDniInput.reportValidity();
-        return;
-      }
-
-      rucDniInput.setCustomValidity('');
-
-      const identifier = rucDniInput.value.trim();
-      if (!identifier) return;
-
-      this.#setButtonLoading(searchButton, true);
-
-      try {
-        const data = await this.#fetchClientData(identifier);
-        this.#updateFieldsFromData(data, identifier, {nameField, clientTypeField, addressInput});
-      } catch (err) {
-        this.#resetFields({nameField, clientTypeField, addressInput});
-      } finally {
-        this.#setButtonLoading(searchButton, false);
-      }
+  static #clearForm() {
+    document.querySelector('main').classList.add('cliente-register-body');
+    document.querySelectorAll("#register-client-form input").forEach(input => {
+      input.value = '';
     });
   }
 
@@ -163,11 +132,143 @@ export class ClientRegisterManager {
 
 
   /**
+   * Initialize the search button click event listener
+   * @param {Object} elements - An object containing references to the DOM elements
+   */
+  static #initSearchButtonListener(elements) {
+    const {searchButton, rucDniInput, nameField, clientTypeField, addressInput} = elements;
+
+    searchButton.addEventListener('click', async () => {
+      if (rucDniInput.value.trim().length !== 8 && rucDniInput.value.trim().length !== 11) {
+        rucDniInput.setCustomValidity('Ingrese un RUC o DNI válido');
+        rucDniInput.reportValidity();
+        return;
+      }
+
+      rucDniInput.setCustomValidity('');
+
+      const identifier = rucDniInput.value.trim();
+      if (!identifier) return;
+
+      this.#setButtonLoading(searchButton, true);
+
+      try {
+        const data = await this.#fetchClientData(identifier);
+        this.#updateFieldsFromData(data, identifier, {nameField, clientTypeField, addressInput});
+        this.#stagedRucDni = identifier;
+      } catch (err) {
+        this.#resetFields({nameField, clientTypeField, addressInput});
+        this.#stagedRucDni = '';
+      } finally {
+        this.#setButtonLoading(searchButton, false);
+      }
+    });
+  }
+
+
+
+
+
+  /**
+   * Extract form data for client registration
+   * @returns {Object} - Formatted form data ready for submission
+   */
+  static #extractFormData() {
+    const rucDni = ClientRegisterManager.#stagedRucDni;
+    const name = document.getElementById('client-name').textContent.trim();
+    const clientType = document.getElementById('client-type').textContent.trim();
+    const address = document.getElementById('client-address').value.trim();
+    const phone = document.getElementById('client-phone').value.trim();
+    const email = document.getElementById('client-email').value.trim();
+
+    const isDni = rucDni.length === 8;
+    const isRuc = rucDni.length === 11;
+
+    let client_type = '';
+    if (clientType.toLowerCase().includes('natural')) {
+      client_type = 'natural';
+    } else if (clientType.toLowerCase().includes('jurídico')) {
+      client_type = 'legal';
+    }
+
+    return {
+      client_type,
+      dni: isDni ? rucDni : '',
+      ruc: isRuc ? rucDni : '',
+      name,
+      address,
+      phone,
+      email
+    };
+  }
+
+
+
+  /**
+   * Build FormData object from extracted data
+   * @param {Object} data - The extracted form data
+   * @returns {FormData} - FormData object ready for API submission
+   */
+  static #buildFormData(data) {
+    const formData = new FormData();
+    Object.entries(data).forEach(([key, value]) => {
+      formData.append(key, value);
+    });
+    return formData;
+  }
+
+
+
+  /**
+   * Reset form after successful registration
+   * @param {HTMLFormElement} form - The form element to reset
+   */
+  static #resetFormAfterSubmit(form) {
+    form.reset();
+    document.getElementById('client-name').textContent = '';
+    document.getElementById('client-type').textContent = '';
+    ClientRegisterManager.#stagedRucDni = '';
+  }
+
+
+  /**
+   * Initialize the form submission event listener
+   * @param {Object} elements - An object containing references to the DOM elements
+   */
+  static #initFormListener(elements) {
+    elements.form.addEventListener('submit', async (e) => {
+
+      e.preventDefault();
+
+      const extractedData = ClientRegisterManager.#extractFormData();
+      const formData = ClientRegisterManager.#buildFormData(extractedData);
+
+      try {
+        const result = await ApiManager.fetchData('/api/register_client/', formData);
+        
+        if (result.success) {
+          alert(`Cliente registrado con código: ${result.code}`);
+          ClientRegisterManager.#resetFormAfterSubmit(form);
+        } else if (result.error) {
+          alert(result.error);
+        } else {
+          alert('Error al registrar cliente');
+        }
+      } catch (err) {
+        alert('Error al registrar cliente');
+      }
+    });
+  }
+
+
+
+  /**
    * Initialize the client registration form on DOM load
    */
   static initOnDomLoad() {
-    ClientRegisterManager.#clearForm();
-    const elements = ClientRegisterManager.#setupDomElements();
-    ClientRegisterManager.#initSearchButtonListener(elements);
+    this.#clearForm();
+    const elements = this.#setupDomElements();
+    this.#initSearchButtonListener(elements);
+    this.#initFormListener(elements);
   }
 }

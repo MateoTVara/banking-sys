@@ -72,3 +72,9 @@ main > #register-client-form > div:nth-child(2) > div {
 main > #register-client-form > div:nth-child(2) > div > * {
   flex: 1;
 }
+
+#client-name,
+#client-type {
+  text-align: center;
+  flex: 1
+}

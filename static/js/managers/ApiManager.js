@@ -8,15 +8,15 @@ export class ApiManager {
       if (typeof url !== 'string'){throw new TypeError('url must be a string')}
 
       const response = await fetch(url, {
-        method: 'POST',
+        method: 'POST', 
         body: formData,
       });
 
-      if (!response.ok) {throw new Error('Error fetching data')}
-
-      return await response.json();
+      const data = await response.json();
+      
+      return data;
     } catch (err) {
-      throw new Error(`Error fetching data: ${err.message}`);
+      return { error: `Error de conexión: ${err.message}` };
     }
   }
 }

@@ -5,6 +5,8 @@ import requests
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from dotenv import load_dotenv
+import uuid
+from django.views.decorators.http import require_POST
 
 load_dotenv()
 
@@ -54,3 +56,38 @@ def fetch_identifier_data(request):
         else:
             return JsonResponse({"error": "Identificador inválido"}, status=400)
     return JsonResponse({"error": "Método no permitido"}, status=405)
+
+@csrf_exempt
+@require_POST
+def register_client(request):
+    client_type = request.POST.get("client_type")
+    dni = request.POST.get("dni")
+    ruc = request.POST.get("ruc")
+    name = request.POST.get("name")
+    address = request.POST.get("address")
+    phone = request.POST.get("phone")
+    email = request.POST.get("email")
+
+    if dni:
+        if Client.objects.filter(dni=dni).exists():
+            return JsonResponse({"error": "Ya existe un cliente con ese DNI"}, status=409)
+    if ruc:
+        if Client.objects.filter(ruc=ruc).exists():
+            return JsonResponse({"error": "Ya existe un cliente con ese RUC"}, status=409)
+
+    code = str(uuid.uuid4())[:8]
+
+    if not name or not client_type:
+        return JsonResponse({"error": "Datos incompletos"}, status=400)
+
+    client = Client.objects.create(
+        code=code,
+        client_type=client_type,
+        dni=dni,
+        ruc=ruc,
+        name=name,
+        address=address,
+        phone=phone,
+        email=email
+    )
+    return JsonResponse({"success": True, "client_id": client.id, "code": code})

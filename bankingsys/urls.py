@@ -16,4 +16,5 @@ urlpatterns = [
     path('account_movements/', views.account_movement_list, name='account_movements'),
 
     path('api/fetch_identifier/', views.fetch_identifier_data, name='fetch_identifier'),
+    path('api/register_client/', views.register_client, name='register_client'),
 ]
