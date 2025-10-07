@@ -248,7 +248,7 @@ export class ClientRegisterManager {
         
         if (result.success) {
           alert(`Cliente registrado con código: ${result.code}`);
-          ClientRegisterManager.#resetFormAfterSubmit(form);
+          ClientRegisterManager.#resetFormAfterSubmit(elements.form);
         } else if (result.error) {
           alert(result.error);
         } else {
