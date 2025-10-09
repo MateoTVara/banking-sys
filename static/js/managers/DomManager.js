@@ -1,4 +1,5 @@
 import { ClientManager } from "./doms/clients/index.js";
+import { JudicialHoldManager } from "./doms/judicial_holds/index.js";
 
 export class DomManager {
   constructor() {}
@@ -61,6 +62,8 @@ export class DomManager {
     window.addEventListener('DOMContentLoaded', () => {
       if (window.location.pathname === '/clients/register/') {
         ClientManager.initRegisterMngr();
+      } else if (window.location.pathname === '/judicial_holds/register/') {
+        JudicialHoldManager.initRegisterMngr();
       }
     });
   }

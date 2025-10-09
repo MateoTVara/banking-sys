@@ -1,0 +1,78 @@
+{% extends 'bankingsys/index.html' %}
+{% load static %}
+
+{% block styles %}
+  <link rel="stylesheet" href="{% static 'css/judicial_hold/register.css' %}?v=1">
+{% endblock %}
+
+{% block header %}
+  <h1>Sistema Bancario - Registro de Embargos</h1>
+{% endblock %}
+
+{% block content %}
+  <section id="judicial-hold-register-section">
+    <div>
+      <input type="text">
+      <button>B</button>
+    </div>
+    {% comment %} <ul>
+      {% for client in clients %}
+        <li>
+          <p class="client-info">
+            {{ client.name }} 
+            ({% if client.dni %}
+              DNI: {{ client.dni }}
+            {% elif client.ruc %}
+              RUC: {{ client.ruc }}
+            {% endif %})
+          </p>
+          <ul class="account-list">
+            {% for account in client.account_set.all %}
+              <li>Cuenta: {{ account.account_number }} - Tipo: {{ account.get_account_type_display }}</li>
+            {% empty %}
+              <li>No hay cuentas asociadas.</li>
+            {% endfor %}
+          </ul>
+        </li>
+      {% empty %}
+        <li>No hay clientes registrados.</li>
+      {% endfor %}
+    </ul> {% endcomment %}
+    <div>
+      {% for client in clients %}
+        <div class="client-card">
+          <div class="client-info">
+            <h3>{{ client.name }}</h3>
+            <div>
+              {% if client.dni %}
+                <p>DNI: {{ client.dni }}</p>
+              {% elif client.ruc %}
+                <p>RUC: {{ client.ruc }}</p>
+              {% endif %}
+
+              <p>{{ client.get_client_type_display }}</p>
+            </div>
+          </div>
+          <div class="account-list">
+            {% for account in client.account_set.all %}
+              <div>
+                <div>
+                  <p>{{ account.account_number }}</p>
+                  <p>{{ account.get_account_type_display }}</p>
+                </div>
+                <div>
+                  <p>{{ account.balance }}</p>
+                  <p>{{ account.currency }}</p>
+                </div>
+              </div>
+            {% empty %}
+              <div>No hay cuentas asociadas.</div>
+            {% endfor %}
+          </div>
+        </div>
+      {% empty %}
+        <div>No hay clientes registrados.</div>
+      {% endfor %}
+    </div>
+  </section>
+{% endblock %}

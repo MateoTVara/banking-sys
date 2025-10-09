@@ -1,0 +1,92 @@
+main.judicial-hold-register-body {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  justify-content: start;
+}
+
+#judicial-hold-register-section {
+  --inline-padding: 32px;
+  --block-padding: 16px;
+  width: calc(50% + var(--inline-padding) * 2);
+  height: fit-content;
+  margin-inline: auto;
+  padding: var(--block-padding) var(--inline-padding);
+
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 16px;
+}
+
+#judicial-hold-register-section > div:first-child {
+  margin-inline: 15%;
+
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+#judicial-hold-register-section > div:last-child > div {
+  margin-bottom: 2px;
+}
+
+#judicial-hold-register-section > div:last-child > div > .client-info {
+  padding: 4px 8px;
+  border: 1px solid black;
+  cursor: pointer;
+  transition: background-color 0.1s;
+
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#judicial-hold-register-section > div:last-child > div > .client-info:hover {
+  background-color: #e0e0e0;
+}
+
+.client-info > div:last-child > p{
+  text-align: end;
+}
+
+#judicial-hold-register-section > div:first-child > input {
+  flex: 1;
+}
+
+#judicial-hold-register-section > div:first-child > button {
+  width: 32px;
+  height: 32px;
+}
+
+#judicial-hold-register-section .account-list{
+  display: none;
+}
+
+#judicial-hold-register-section .account-list.active {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  
+  background-color: #e0e0e0;
+}
+
+#judicial-hold-register-section .account-list > div {
+  padding: 4px 8px;
+  border-inline: 1px solid black;
+  border-bottom: 1px solid black;
+  cursor: pointer;
+
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+#judicial-hold-register-section .account-list > div:hover {
+    background-color: #d0d0d0;
+}
+
+.account-list > div > div:last-child > p{
+  text-align: end;
+}
