@@ -41,22 +41,4 @@
       </div>
     </form>
   </section>
-  <script>
-    // Show/hide amount input based on hold_type selection
-    document.addEventListener('DOMContentLoaded', function() {
-      const holdTypeSelect = document.getElementById('hold_type');
-      const amountGroup = document.getElementById('amount-group');
-      holdTypeSelect.addEventListener('change', function() {
-        if (holdTypeSelect.value === 'partial') {
-          amountGroup.style.display = '';
-          document.getElementById('hold_amount').required = true;
-        } else {
-          amountGroup.style.display = 'none';
-          document.getElementById('hold_amount').required = false;
-        }
-      });
-      // Trigger change event on load in case of form re-render
-      holdTypeSelect.dispatchEvent(new Event('change'));
-    });
-  </script>
 {% endblock %}
