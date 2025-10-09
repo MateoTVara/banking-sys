@@ -14,6 +14,7 @@ urlpatterns = [
     path('accounts/', views.account_list, name='accounts'),
     path('judicial_holds/', views.judicial_hold_list, name='judicial_holds'),
     path('judicial_holds/register/', views.judicial_hold_register, name='judicial_hold_register'),
+    path('judicial_holds/register_form/', views.judicial_hold_register_form, name='judicial_hold_register_form'),
     path('account_movements/', views.account_movement_list, name='account_movements'),
 
     path('api/fetch_identifier/', views.fetch_identifier_data, name='fetch_identifier'),

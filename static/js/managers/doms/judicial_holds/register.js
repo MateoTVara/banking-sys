@@ -38,6 +38,12 @@ export class JudicialHoldRegisterManager {
     const elements = this.#setupDomElements();
     this.#initFormListeners(elements);
     this.#initInputSearchListeners(elements);
+
+    document.querySelectorAll('.account-card-form').forEach(card => {
+      card.addEventListener('click', function() {
+        card.submit();
+      });
+    });
   }
 
 }

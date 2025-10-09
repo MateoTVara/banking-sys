@@ -15,29 +15,6 @@
       <input type="text">
       <button>B</button>
     </div>
-    {% comment %} <ul>
-      {% for client in clients %}
-        <li>
-          <p class="client-info">
-            {{ client.name }} 
-            ({% if client.dni %}
-              DNI: {{ client.dni }}
-            {% elif client.ruc %}
-              RUC: {{ client.ruc }}
-            {% endif %})
-          </p>
-          <ul class="account-list">
-            {% for account in client.account_set.all %}
-              <li>Cuenta: {{ account.account_number }} - Tipo: {{ account.get_account_type_display }}</li>
-            {% empty %}
-              <li>No hay cuentas asociadas.</li>
-            {% endfor %}
-          </ul>
-        </li>
-      {% empty %}
-        <li>No hay clientes registrados.</li>
-      {% endfor %}
-    </ul> {% endcomment %}
     <div>
       {% for client in clients %}
         <div class="client-card">
@@ -55,16 +32,18 @@
           </div>
           <div class="account-list">
             {% for account in client.account_set.all %}
-              <div>
+              <form action="{% url 'bankingsys:judicial_hold_register_form' %}" method="post" class="account-card-form">
+                {% csrf_token %}
                 <div>
                   <p>{{ account.account_number }}</p>
                   <p>{{ account.get_account_type_display }}</p>
                 </div>
+                <input type="hidden" name="account" value="{{ account.id }}">
                 <div>
                   <p>{{ account.balance }}</p>
                   <p>{{ account.currency }}</p>
                 </div>
-              </div>
+              </form>
             {% empty %}
               <div>No hay cuentas asociadas.</div>
             {% endfor %}

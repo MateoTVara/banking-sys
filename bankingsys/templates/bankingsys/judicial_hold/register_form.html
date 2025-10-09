@@ -1,0 +1,62 @@
+{% extends 'bankingsys/index.html' %}
+{% load static %}
+
+{% block styles %}
+  <link rel="stylesheet" href="{% static 'css/judicial_hold/register_form.css' %}?v=1">
+{% endblock %}
+
+{% block header %}
+  <h1>Sistema Bancario - Registro de Embargos</h1>
+{% endblock %}
+
+{% block content %}
+  <section class="judicial-hold-register-form">
+    <div class="selected-account-card grid-card">
+      <h2>Cuenta Seleccionada - {{ account.account_number }}</h2>
+      <div class="account-info-grid">
+        <div><strong>Cliente:</strong> <span>{{ account.client.name }}</span></div>
+        <div><strong>Tipo:</strong> <span>{{ account.get_account_type_display }}</span></div>
+        <div><strong>Moneda:</strong> <span>{{ account.currency }}</span></div>
+        <div><strong>Saldo:</strong> <span>{{ account.balance }}</span></div>
+      </div>
+    </div>
+    <form method="post" class="embargo-form">
+      {% csrf_token %}
+      <input type="hidden" name="account" value="{{ account.id }}">
+      <div class="form-group">
+        <label for="hold_type">Tipo de embargo:</label>
+        <select name="hold_type" id="hold_type" required>
+          {% for value, label in hold_type_choices %}
+            <option value="{{ value }}">{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group" id="amount-group" style="display:none;">
+        <label for="hold_amount">Monto a embargar:</label>
+        <input type="number" step="0.01" name="hold_amount" id="hold_amount">
+      </div>
+      <div class="form-actions">
+        <a href="{% url 'bankingsys:judicial_hold_register' %}" class="btn cancel-btn">Cancelar</a>
+        <button type="submit" class="btn submit-btn">Registrar embargo</button>
+      </div>
+    </form>
+  </section>
+  <script>
+    // Show/hide amount input based on hold_type selection
+    document.addEventListener('DOMContentLoaded', function() {
+      const holdTypeSelect = document.getElementById('hold_type');
+      const amountGroup = document.getElementById('amount-group');
+      holdTypeSelect.addEventListener('change', function() {
+        if (holdTypeSelect.value === 'partial') {
+          amountGroup.style.display = '';
+          document.getElementById('hold_amount').required = true;
+        } else {
+          amountGroup.style.display = 'none';
+          document.getElementById('hold_amount').required = false;
+        }
+      });
+      // Trigger change event on load in case of form re-render
+      holdTypeSelect.dispatchEvent(new Event('change'));
+    });
+  </script>
+{% endblock %}

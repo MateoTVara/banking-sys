@@ -64,6 +64,8 @@ export class DomManager {
         ClientManager.initRegisterMngr();
       } else if (window.location.pathname === '/judicial_holds/register/') {
         JudicialHoldManager.initRegisterMngr();
+      } else if (window.location.pathname === '/judicial_holds/register_form/') {
+        JudicialHoldManager.initRegisterFormMngr();
       }
     });
   }
