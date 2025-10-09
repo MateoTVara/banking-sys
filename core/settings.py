@@ -51,6 +51,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'bankingsys.middleware.LoginRequiredMiddleware',
+    'bankingsys.middleware.ExchangeRateRequiredMiddleware',
 ]
 
 ROOT_URLCONF = 'core.urls'

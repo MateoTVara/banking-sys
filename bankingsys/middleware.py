@@ -1,12 +1,57 @@
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.conf import settings
+from datetime import date
+from .models import ExchangeRate
+
+
+class ExchangeRateRequiredMiddleware:
+    """
+    Middleware que requiere una tasa de cambio establecida para la fecha de hoy
+    antes de permitir el acceso al sistema.
+    Solo las páginas de inicio y cierre de sesión son accesibles sin la tasa de cambio.
+    """
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        path = request.path_info
+
+        # URLs exentas que deberian siempre estar disponibles
+        exempt_urls = [
+            '/admin/',
+            '/static/',
+            '/media/',
+            reverse('bankingsys:login'),
+            reverse('bankingsys:logout'),
+            reverse('bankingsys:exchange_rate_setup'),
+        ]
+        
+        # Verifica si la URL actual está en la lista de URLs exentas
+        if any(path.startswith(url) for url in exempt_urls):
+            response = self.get_response(request)
+            return response
+
+        # Verifica si el usuario está autenticado
+        if not request.user.is_authenticated:
+            response = self.get_response(request)
+            return response
+
+        # Verifica si existe la tasa de cambio de hoy
+        today = date.today()
+        exchange_rate_exists = ExchangeRate.objects.filter(date=today).exists()
+        
+        if not exchange_rate_exists:
+            return redirect('bankingsys:exchange_rate_setup')
+        
+        response = self.get_response(request)
+        return response
 
 
 class LoginRequiredMiddleware:
     """
-    Middleware that requires a user to be authenticated to view any page.
-    Exempts the login page and any URLs in the EXEMPT_URLS setting.
+    Middleware que requiere que un usuario esté autenticado para ver cualquier página.
+    Exime la página de inicio de sesión y cualquier URL en la configuración de EXEMPT_URLS.
     """
     def __init__(self, get_response):
         self.get_response = get_response
