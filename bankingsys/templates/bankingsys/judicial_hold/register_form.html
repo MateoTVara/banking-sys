@@ -7,6 +7,13 @@
 
 {% block header %}
   <h1>Sistema Bancario - Registro de Embargos</h1>
+  {% if messages %}
+    <div class="messages">
+      {% for message in messages %}
+        <div class="message {{ message.tags }}">{{ message }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
 {% endblock %}
 
 {% block content %}
@@ -25,7 +32,15 @@
       <input type="hidden" name="account" value="{{ account.id }}">
       <div class="form-group">
         <label for="hold_type">Tipo de embargo:</label>
-        <select name="hold_type" id="hold_type" required>
+        <select
+          name="hold_type"
+          id="hold_type"
+          required
+          data-balance="{{ account.balance }}"
+          data-currency="{{ account.currency }}"
+          data-exchange-rate="{{ exchange_rate|default:0 }}"
+          data-has-active-hold="{{ has_active_hold|yesno:'true,false' }}"
+        >
           {% for value, label in hold_type_choices %}
             <option value="{{ value }}">{{ label }}</option>
           {% endfor %}
