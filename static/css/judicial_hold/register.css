@@ -8,12 +8,11 @@ main.judicial-hold-register-body {
 #judicial-hold-register-section {
   --inline-padding: 32px;
   --block-padding: 16px;
+  flex: 1;
+  height: calc(clamp(400px, 100%, 800px) + var(--block-padding) * 2);
   width: calc(clamp(300px, 50%, 700px) + var(--inline-padding) * 2);
-  
-  height: fit-content;
   margin-inline: auto;
   padding: var(--block-padding) var(--inline-padding);
-
   display: flex;
   flex-direction: column;
   align-items: stretch;
@@ -28,13 +27,18 @@ main.judicial-hold-register-body {
   gap: 8px;
 }
 
-#judicial-hold-register-section > div:last-child > div {
-  margin-bottom: 2px;
+#judicial-hold-register-section > div:last-child {
+  flex: 1;
+  min-height: 300px;
+  border: 3px solid black;
+  border-radius: 8px;
+  overflow: auto;
+  scrollbar-width:none ;
 }
 
 #judicial-hold-register-section > div:last-child > div > .client-info {
   padding: 4px 8px;
-  border: 1px solid black;
+  border-bottom: 1px solid black;
   cursor: pointer;
   transition: background-color 0.1s;
 
@@ -53,12 +57,24 @@ main.judicial-hold-register-body {
 }
 
 #judicial-hold-register-section > div:first-child > input {
+  border: 1px solid #222;
+  border-radius: 4px;
   flex: 1;
 }
 
 #judicial-hold-register-section > div:first-child > button {
   width: 32px;
   height: 32px;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  background: #222;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+#judicial-hold-register-section > div:first-child > button:hover {
+  background: #555;
 }
 
 #judicial-hold-register-section .account-list{
@@ -76,7 +92,6 @@ main.judicial-hold-register-body {
 #judicial-hold-register-section .account-list > form,
 #judicial-hold-register-section .account-list > div {
   padding: 4px 8px;
-  border-inline: 1px solid black;
   border-bottom: 1px solid black;
   cursor: pointer;
 
