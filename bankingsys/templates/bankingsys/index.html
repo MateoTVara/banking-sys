@@ -14,14 +14,14 @@
     <button class="nav-toggle" aria-expanded="false" aria-controls="nav-menu">≡</button>
     {% block header %}
       <h1>Sistema Bancario</h1>
-      {% if messages %}
-        <div class="messages">
-          {% for message in messages %}
-            {{ message }}
-          {% endfor %}
-        </div>
-      {% endif %}
     {% endblock %}
+    {% if messages %}
+    <div class="messages">
+      {% for message in messages %}
+      <div class="message {{ message.tags }}">{{ message }}</div>
+      {% endfor %}
+    </div>
+    {% endif %}
   </header>
   <nav>
     {% block nav %}
