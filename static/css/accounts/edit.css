@@ -1,0 +1,147 @@
+main.account-edit-form-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: start;
+}
+
+main.account-edit-form-body > form {
+  padding: 24px;
+  border: 3px solid black;
+  border-radius: 8px;
+  margin: auto;
+  width: clamp(300px, 50%, 600px);
+  height: 95%;
+  max-height: 600px;
+  overflow: auto;
+  scrollbar-width: none;
+
+  display: flex;
+  flex-direction: column;
+}
+
+main.account-edit-form-body > form > *:nth-child(2) {
+  margin-top: auto;
+}
+
+main.account-edit-form-body > form > *:last-child {
+  margin-bottom: auto;
+}
+
+form > h2 {
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+form > .client-info {
+  margin-bottom: 8px;
+
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  flex-wrap: wrap;
+  row-gap: 8px;
+  column-gap: 32px;
+}
+
+.client-info > h3 {
+  text-align: center  ;
+}
+
+form > .actions {
+  margin-top: 16px;
+
+  display: flex;
+  flex-direction: row;
+  align-self: flex-end;
+  gap: 4px;
+}
+
+.actions > * {
+  padding: 0.5rem 1.5rem;
+  border: none;
+  border-radius: 4px;
+  background: #222;
+  color: #fff;
+  cursor: pointer;
+  text-decoration: none;
+  font-weight: 500;
+  transition: background 0.2s;
+  align-content: center;
+}
+
+.actions > a {
+  background: #aaa;
+  color: #222;
+}
+
+.actions > a:hover {
+  background: #888;
+}
+
+.actions > button:hover {
+  background: #555;
+}
+
+.account-data {
+  background: #f7f7f7;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  padding: 18px 24px;
+  margin-bottom: 16px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.account-data dl {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  row-gap: 10px;
+  column-gap: 24px;
+  margin: 0;
+}
+
+.account-data dt {
+  font-weight: bold;
+  color: #333;
+  text-align: right;
+}
+
+.account-data dd {
+  margin: 0;
+  color: #222;
+  padding-left: 0.5em;
+  word-break: break-word;
+}
+
+form .form-group {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+}
+
+form select {
+  flex: 1;
+  padding: 0.5rem 1rem;
+  border: 2px solid #bbb;
+  border-radius: 6px;
+  background: #fafafa;
+  color: #222;
+  font-size: 1rem;
+  transition: border-color 0.2s;
+  outline: none;
+  box-sizing: border-box;
+}
+
+form select:focus {
+  border-color: #222;
+  background: #f0f0f0;
+}
+
+@media (max-width: 768px) {
+  main.account-edit-form-body > form {
+    min-width: 95%;
+  }
+}

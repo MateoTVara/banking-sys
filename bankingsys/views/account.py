@@ -1,4 +1,5 @@
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, redirect
+from django.http import Http404
 from ..models import Account
 from django import forms
 
@@ -7,8 +8,14 @@ class AccountForm(forms.ModelForm):
         model = Account
         fields = ['status']
 
-def account_edit(request, pk):
-    account = get_object_or_404(Account, pk=pk)
+def account_edit(request):
+    account_id = request.POST.get('account') or request.GET.get('account')
+    if not account_id:
+        return redirect('bankingsys:accounts')
+    try:
+        account = Account.objects.get(pk=account_id)
+    except Account.DoesNotExist:
+        return redirect('bankingsys:accounts')
     if request.method == 'POST':
         form = AccountForm(request.POST, instance=account)
         if form.is_valid():

@@ -1,3 +1,4 @@
+import { AccountManager } from "./doms/accounts/index.js";
 import { ClientManager } from "./doms/clients/index.js";
 import { JudicialHoldManager } from "./doms/judicial_holds/index.js";
 
@@ -66,6 +67,8 @@ export class DomManager {
         JudicialHoldManager.initRegisterMngr();
       } else if (window.location.pathname === '/judicial_holds/register_form/') {
         JudicialHoldManager.initRegisterFormMngr();
+      } else if (window.location.pathname === '/accounts/edit/') {
+        AccountManager.initEditAccountManager();
       }
     });
   }

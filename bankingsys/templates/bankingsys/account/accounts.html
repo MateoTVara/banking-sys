@@ -30,7 +30,7 @@
             <td>{{ account.balance }}</td>
             <td>{{ account.get_status_display }}</td>
             <td>
-              <a href="{% url 'bankingsys:account_edit' account.id %}">Editar</a>
+              <a href="{% url 'bankingsys:account_edit' %}?account={{ account.id }}">Editar</a>
             </td>
           </tr>
           {% endfor %}

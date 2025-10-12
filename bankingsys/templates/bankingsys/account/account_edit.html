@@ -1,4 +1,9 @@
 {% extends 'bankingsys/index.html' %}
+{% load static %}
+
+{% block styles %} 
+  <link rel="stylesheet" href="{% static 'css/accounts/edit.css' %}">
+{% endblock %}
 
 {% block header %}
   <h1>Editar Cuenta</h1>
@@ -7,39 +12,58 @@
 {% block content %}
   <form method="post">
     {% csrf_token %}
-    <div><strong>Cliente:</strong> {{ account.client.name }}</div>
-    <div><strong>Número de identificación:</strong>
-      {% if account.client.dni %}
-        {{ account.client.dni }}
-      {% else %}
-        {{ account.client.ruc }}
-      {% endif %}
+    <h2>Información de la Cuenta</h2>
+    <div class="client-info">
+      <h3>{{ account.client.name }}</h3>
+      <h3>
+        {% if account.client.dni %}
+          {{ account.client.dni }}
+        {% else %}
+          {{ account.client.ruc }}
+        {% endif %}
+      </h3>
     </div>
-    <div><strong>Número de Cuenta:</strong> {{ account.account_number }}</div>
-    <div><strong>Tipo de Cuenta:</strong> {{ account.get_account_type_display }}</div>
-    <div><strong>Moneda:</strong> {{ account.get_currency_display }}</div>
-    <div><strong>Saldo:</strong> {{ account.balance }}</div>
+    <div class="account-data">
+      <dl>
+        <dt>Número de Cuenta:</dt>
+        <dd>{{ account.account_number }}</dd>
+        <dt>Tipo de Cuenta:</dt>
+        <dd>{{ account.get_account_type_display }}</dd>
+        <dt>Moneda:</dt>
+        <dd>{{ account.get_currency_display }}</dd>
+        <dt>Saldo:</dt>
+        <dd>{{ account.balance }}</dd>
 
-    {% if account.account_type == 'current' %}
-    <div><strong>Límite de Sobregiro:</strong> {{ account.overdraft_limit }}</div>
-    {% endif %}
+        {% if account.account_type == 'current' %}
+          <dt>Límite de Sobregiro:</dt>
+          <dd>{{ account.overdraft_limit }}</dd>
+        {% endif %}
 
-    {% if account.account_type == 'term' %}
-    <div><strong>Meses de Plazo:</strong> {{ account.term_months }}</div>
-    <div><strong>Interés Mensual:</strong> {{ account.monthly_interest }}</div>
-    {% endif %}
-    
-    <div><strong>Fecha de Creación:</strong> {{ account.opened_at }}</div>
+        {% if account.account_type == 'term' %}
+          <dt>Meses de Plazo:</dt>
+          <dd>{{ account.term_months }}</dd>
+          <dt>Interés Mensual:</dt>
+          <dd>{{ account.monthly_interest }}</dd>
+        {% endif %}
 
-    {% if account.closed_at %}
-    <div><strong>Fecha de Cierre:</strong> {{ account.closed_at }}</div>
-    {% endif %}
+        <dt>Fecha de Creación:</dt>
+        <dd>{{ account.opened_at }}</dd>
+        
+        {% if account.closed_at %}
+          <dt>Fecha de Cierre:</dt>
+          <dd>{{ account.closed_at }}</dd>
+        {% endif %}
+      </dl>
+    </div>
 
-    <div>
+    <div class="form-group">
       <label for="id_status"><strong>Estado:</strong></label>
       {{ form.status }}
     </div>
-    <button type="submit">Guardar Cambios</button>
-    <a href="{% url 'bankingsys:accounts' %}">Cancelar</a>
+
+    <div class="actions">
+      <a href="{% url 'bankingsys:accounts' %}">Cancelar</a>
+      <button type="submit">Guardar Cambios</button>
+    </div>
   </form>
 {% endblock %}
