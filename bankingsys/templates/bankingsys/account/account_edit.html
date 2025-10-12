@@ -1,0 +1,45 @@
+{% extends 'bankingsys/index.html' %}
+
+{% block header %}
+  <h1>Editar Cuenta</h1>
+{% endblock %}
+
+{% block content %}
+  <form method="post">
+    {% csrf_token %}
+    <div><strong>Cliente:</strong> {{ account.client.name }}</div>
+    <div><strong>Número de identificación:</strong>
+      {% if account.client.dni %}
+        {{ account.client.dni }}
+      {% else %}
+        {{ account.client.ruc }}
+      {% endif %}
+    </div>
+    <div><strong>Número de Cuenta:</strong> {{ account.account_number }}</div>
+    <div><strong>Tipo de Cuenta:</strong> {{ account.get_account_type_display }}</div>
+    <div><strong>Moneda:</strong> {{ account.get_currency_display }}</div>
+    <div><strong>Saldo:</strong> {{ account.balance }}</div>
+
+    {% if account.account_type == 'current' %}
+    <div><strong>Límite de Sobregiro:</strong> {{ account.overdraft_limit }}</div>
+    {% endif %}
+
+    {% if account.account_type == 'term' %}
+    <div><strong>Meses de Plazo:</strong> {{ account.term_months }}</div>
+    <div><strong>Interés Mensual:</strong> {{ account.monthly_interest }}</div>
+    {% endif %}
+    
+    <div><strong>Fecha de Creación:</strong> {{ account.opened_at }}</div>
+
+    {% if account.closed_at %}
+    <div><strong>Fecha de Cierre:</strong> {{ account.closed_at }}</div>
+    {% endif %}
+
+    <div>
+      <label for="id_status"><strong>Estado:</strong></label>
+      {{ form.status }}
+    </div>
+    <button type="submit">Guardar Cambios</button>
+    <a href="{% url 'bankingsys:accounts' %}">Cancelar</a>
+  </form>
+{% endblock %}
