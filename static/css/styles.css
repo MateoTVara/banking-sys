@@ -91,6 +91,12 @@ header {
   overflow: hidden;
 }
 
+header h1 {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-right: 16px;
+}
+
 header button:first-child {
   background-color: transparent;
   border: none;
@@ -225,4 +231,13 @@ footer {
   padding: 8px;
   text-align: center;
   overflow: hidden;
+}
+
+@media (max-width: 768px) {
+  header {
+    padding: 4px 8px;
+  }
+  header h1 {
+    margin-left: 12px;
+  }
 }

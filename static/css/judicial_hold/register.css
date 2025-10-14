@@ -9,9 +9,10 @@ main.judicial-hold-register-body {
   --inline-padding: 32px;
   --block-padding: 16px;
   flex: 1;
-  height: calc(clamp(400px, 100%, 800px) + var(--block-padding) * 2);
-  width: calc(clamp(300px, 50%, 700px) + var(--inline-padding) * 2);
-  margin-inline: auto;
+  height: clamp(400px, 90%, 800px);
+  max-height: 800px;
+  width: clamp(300px, 50%, 600px);
+  margin: auto;
   padding: var(--block-padding) var(--inline-padding);
   display: flex;
   flex-direction: column;
@@ -110,8 +111,9 @@ main.judicial-hold-register-body {
 
 @media (max-width: 768px) {
   #judicial-hold-register-section {
-    width: calc(300px + var(--inline-padding) * 2);
-    padding: var(--block-padding) var(--inline-padding);
+    width: 100%;
+    min-width: 300px;
+    padding: calc(var(--block-padding) - 8px) calc(var(--inline-padding) - 16px);
   }
   #judicial-hold-register-section > div:first-child {
     margin-inline: 0;
