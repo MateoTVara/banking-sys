@@ -5,3 +5,4 @@ scripts/
 my.ini
 .env
 mycommit.bat
+node_modules/

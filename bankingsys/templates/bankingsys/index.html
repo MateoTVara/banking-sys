@@ -7,6 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="{% static 'css/styles.css' %}?v=1">
   {% block styles %} {% endblock %}
+  <script src="{% static 'js/pnpm_modules/chart.js' %}?v=1" defer></script>
   <script type="module" src="{% static 'js/script.js' %}?v=1" defer></script>
 </head>
 <body>
@@ -46,12 +47,98 @@
   </nav>
   <main>
     {% block content %}
-    <h2>Bienvenido al Sistema Bancario</h2>
-    <p>Esta es la página principal de la aplicación del sistema bancario.</p>
+    <div class="dashboard-container">
+      <section class="cards-container">
+        <div class="dashboard-card">
+          <h3>Clientes</h3>
+          <p class="dashboard-value">{{ clients_count|default:"-" }}</p>
+          <a href="{% url 'bankingsys:clients' %}">Ver todos</a>
+        </div>
+        <div class="dashboard-card">
+          <h3>Cuentas</h3>
+          <p class="dashboard-value">{{ accounts_count|default:"-" }}</p>
+          <a href="{% url 'bankingsys:accounts' %}">Ver todas</a>
+        </div>
+        <div class="dashboard-card">
+          <h3>Embargos Judiciales</h3>
+          <p class="dashboard-value">{{ judicial_holds_count|default:"-" }}</p>
+          <a href="{% url 'bankingsys:judicial_holds' %}">Ver todos</a>
+        </div>
+        <div class="dashboard-card">
+          <h3>Movimientos de Cuenta</h3>
+          <p class="dashboard-value">{{ account_movements_count|default:"-" }}</p>
+          <a href="{% url 'bankingsys:account_movements' %}">Ver todos</a>
+        </div>
+      </section>
+      <div class="chart-container bar"><canvas id="movementsBarChart"></canvas></div>
+      <div class="chart-container line"><canvas id="movementsLineChart"></canvas></div>
+    </div>
+    <script>
+      // Bar chart
+      document.addEventListener("DOMContentLoaded", () => {
+        // document.querySelector('main').classList.add('dashboard');
+
+        const ctx = document.getElementById('movementsBarChart').getContext('2d');
+        const labels = {{ movement_labels|safe }};
+        const data = {
+          labels: labels,
+          datasets: [{
+            label: 'Movimientos de Cuenta',
+            data: [
+              {% for value in movement_counts.values %}
+                {{ value }},
+              {% endfor %}
+            ],
+            backgroundColor: [
+              '#36a2eb', '#ff6384', '#ffcd56', '#4bc0c0', '#9966ff'
+            ],
+          }]
+        };
+        new Chart(ctx, {
+          type: 'bar',
+          data: data,
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false },
+              title: { display: true, text: 'Movimientos de Cuenta por Tipo' }
+            }
+          }
+        });
+
+        // Line chart
+        const lineCtx = document.getElementById('movementsLineChart').getContext('2d');
+        const lineLabels = {{ movement_dates|safe }};
+        const lineData = {
+          labels: lineLabels,
+          datasets: [{
+            label: 'Movimientos por Fecha',
+            data: {{ movement_date_counts|safe }},
+            fill: false,
+            borderColor: '#36a2eb',
+            tension: 0.1
+          }]
+        };
+        new Chart(lineCtx, {
+          type: 'line',
+          data: lineData,
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: true },
+              title: { display: true, text: 'Movimientos de Cuenta por Fecha' }
+            },
+            scales: {
+              x: { title: { display: true, text: 'Fecha' } },
+              y: { title: { display: true, text: 'Cantidad' }, beginAtZero: true }
+            }
+          }
+        });
+      });
+    </script>
     {% endblock %}
   </main>
-  <footer>
-    {% block footer %}© 2025 Sistema Bancario{% endblock %}
-  </footer>
 </body>
 </html>
