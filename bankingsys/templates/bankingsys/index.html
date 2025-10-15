@@ -10,7 +10,7 @@
   <script src="{% static 'js/pnpm_modules/chart.js' %}?v=1" defer></script>
   <script type="module" src="{% static 'js/script.js' %}?v=1" defer></script>
 </head>
-<body>
+<body class="active-nav">
   <header>
     <button class="nav-toggle" aria-expanded="false" aria-controls="nav-menu">≡</button>
     {% block header %}
@@ -24,7 +24,7 @@
     </div>
     {% endif %}
   </header>
-  <nav>
+  <nav class="active">
     {% block nav %}
     <ul>
       <li><a href="{% url 'bankingsys:index' %}">Home</a></li>
@@ -78,6 +78,14 @@
       document.addEventListener("DOMContentLoaded", () => {
         // document.querySelector('main').classList.add('dashboard');
 
+        const colors = {
+          deposit: '#36a2eb',
+          withdrawal: '#ff6384',
+          transfer: '#ffcd56',
+          renewal: '#4bc0c0',
+          cancellation: '#9966ff'
+        }
+
         const ctx = document.getElementById('movementsBarChart').getContext('2d');
         const labels = {{ movement_labels|safe }};
         const data = {
@@ -90,7 +98,11 @@
               {% endfor %}
             ],
             backgroundColor: [
-              '#36a2eb', '#ff6384', '#ffcd56', '#4bc0c0', '#9966ff'
+              colors.deposit, 
+              colors.withdrawal, 
+              colors.transfer, 
+              colors.renewal, 
+              colors.cancellation
             ],
           }]
         };
