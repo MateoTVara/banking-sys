@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Apertura de Cuenta</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-4">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">📋 Apertura de Nueva Cuenta</h4>
+            </div>
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">📋 Apertura de Nueva Cuenta</h4>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {% for error in form.non_field_errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">{{ form.client.label }}</label>
+                                {{ form.client }}
+                                {% if form.client.errors %}
+                                <div class="text-danger">{{ form.client.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">{{ form.account_type.label }}</label>
+                                {{ form.account_type }}
+                                {% if form.account_type.errors %}
+                                <div class="text-danger">{{ form.account_type.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">{{ form.currency.label }}</label>
+                                {{ form.currency }}
+                                {% if form.currency.errors %}
+                                <div class="text-danger">{{ form.currency.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">{{ form.initial_deposit.label }}</label>
+                                {{ form.initial_deposit }}
+                                {% if form.initial_deposit.errors %}
+                                <div class="text-danger">{{ form.initial_deposit.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Campos específicos para cuenta corriente -->
+                    <div id="current-account-fields" style="display: none;">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">{{ form.overdraft_limit.label }}</label>
+                                    {{ form.overdraft_limit }}
+                                    <small class="form-text text-muted">Límite de sobregiro permitido</small>
+                                    {% if form.overdraft_limit.errors %}
+                                    <div class="text-danger">{{ form.overdraft_limit.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Campos específicos para cuenta a plazos -->
+                    <div id="term-account-fields" style="display: none;">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">{{ form.term_months.label }}</label>
+                                    {{ form.term_months }}
+                                    {% if form.term_months.errors %}
+                                    <div class="text-danger">{{ form.term_months.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">{{ form.monthly_interest.label }}</label>
+                                    {{ form.monthly_interest }}
+                                    <small class="form-text text-muted">Tasa de interés mensual en porcentaje</small>
+                                    {% if form.monthly_interest.errors %}
+                                    <div class="text-danger">{{ form.monthly_interest.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-primary">Abrir Cuenta</button>
+                        <a href="{% url 'bankingsys:account_list' %}" class="btn btn-secondary">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Información sobre tipos de cuenta -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h6 class="mb-0">ℹ️ Información sobre tipos de cuenta</h6>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled">
+                    <li>✅ <strong>Cuenta de Ahorro:</strong> Mínimo S/ 10. Sin sobregiro.</li>
+                    <li>✅ <strong>Cuenta Corriente:</strong> Permite sobregiro. Mínimo S/ 100.</li>
+                    <li>✅ <strong>Cuenta a Plazos:</strong> Mínimo S/ 1000. Tasa de interés fija.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const accountTypeSelect = document.getElementById('id_account_type');
+    const currentFields = document.getElementById('current-account-fields');
+    const termFields = document.getElementById('term-account-fields');
+    
+    function toggleFields() {
+        const selectedType = accountTypeSelect.value;
+        
+        // Ocultar todos los campos primero
+        currentFields.style.display = 'none';
+        termFields.style.display = 'none';
+        
+        // Mostrar campos según el tipo seleccionado
+        if (selectedType === 'current') {
+            currentFields.style.display = 'block';
+        } else if (selectedType === 'term') {
+            termFields.style.display = 'block';
+        }
+    }
+    
+    accountTypeSelect.addEventListener('change', toggleFields);
+    toggleFields(); // Ejecutar al cargar la página
+});
+</script>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,48 +1,9 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import Http404
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from ..models import Account, Client, AccountMovement
-from django import forms
 from ..forms.account_forms import AccountOpeningForm
-
-class AccountForm(forms.ModelForm):
-    class Meta:
-        model = Account
-        fields = ['status']
-
-def account_edit(request):
-    account_id = request.POST.get('account') or request.GET.get('account')
-    if not account_id:
-        return redirect('bankingsys:account_list')
-    try:
-        account = Account.objects.get(pk=account_id)
-    except Account.DoesNotExist:
-        return redirect('bankingsys:account_list')
-    if request.method == 'POST':
-        form = AccountForm(request.POST, instance=account)
-        if form.is_valid():
-            form.save()
-            return redirect('bankingsys:account_list')
-    else:
-        form = AccountForm(instance=account)
-    context = {
-        'form': form,
-        'account': account,
-    }
-    return render(request, 'bankingsys/account/account_edit.html', context)
-
-# === MANTÉN TU account_list EXISTENTE PERO ACTUALIZA EL TEMPLATE ===
-def account_list(request):
-    accounts = Account.objects.all()
-    context = {
-        'accounts': accounts
-    }
-    # ✅ Cambia el template al nuevo que creamos
-    return render(request, 'bankingsys/account_list.html', context)
-
-# === AGREGA ESTAS 2 VISTAS NUEVAS AL FINAL ===
 
 @login_required
 def account_opening(request):
@@ -98,7 +59,7 @@ def account_opening(request):
                         )
 
                     messages.success(request, f'✅ Cuenta creada exitosamente! Número: {account_number}')
-                    return redirect('bankingsys:account_list')
+                    return redirect('bankingsys:accounts')
 
             except Exception as e:
                 messages.error(request, f'❌ Error al crear la cuenta: {str(e)}')
@@ -108,11 +69,17 @@ def account_opening(request):
     return render(request, 'bankingsys/account_opening.html', {'form': form})
 
 @login_required
+def account_list(request):
+    """Vista para listar todas las cuentas"""
+    accounts = Account.objects.select_related('client').all()
+    return render(request, 'bankingsys/account_list.html', {'accounts': accounts})
+
+@login_required
 def account_detail(request, account_id):
     """Vista para ver detalle de una cuenta específica"""
     account = get_object_or_404(Account, id=account_id)
     movements = AccountMovement.objects.filter(account=account).order_by('-created_at')
-    return render(request, 'bankingsys/account/accounts.html', {
+    return render(request, 'bankingsys/account_detail.html', {
         'account': account,
         'movements': movements
     })

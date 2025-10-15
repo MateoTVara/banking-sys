@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+
+{% block title %}Detalle de Cuenta - {{ account.account_number }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">📊 Información de la Cuenta</h4>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless">
+                    <tr>
+                        <th>Número:</th>
+                        <td><strong>{{ account.account_number }}</strong></td>
+                    </tr>
+                    <tr>
+                        <th>Cliente:</th>
+                        <td>{{ account.client.name }}</td>
+                    </tr>
+                    <tr>
+                        <th>Tipo:</th>
+                        <td>
+                            <span class="badge 
+                                {% if account.account_type == 'savings' %}bg-info
+                                {% elif account.account_type == 'current' %}bg-primary
+                                {% else %}bg-warning{% endif %}">
+                                {{ account.get_account_type_display }}
+                            </span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Moneda:</th>
+                        <td>
+                            <span class="badge bg-secondary">
+                                {{ account.get_currency_display }}
+                            </span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Saldo:</th>
+                        <td>
+                            <strong class="fs-5">
+                                {% if account.currency == 'USD' %}${% else %}S/{% endif %}
+                                {{ account.balance }}
+                            </strong>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Estado:</th>
+                        <td>
+                            <span class="badge 
+                                {% if account.status == 'active' %}bg-success
+                                {% else %}bg-danger{% endif %}">
+                                {{ account.get_status_display }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% if account.account_type == 'current' %}
+                    <tr>
+                        <th>Límite Sobregiro:</th>
+                        <td>
+                            {% if account.currency == 'USD' %}${% else %}S/{% endif %}
+                            {{ account.overdraft_limit }}
+                        </td>
+                    </tr>
+                    {% endif %}
+                    {% if account.account_type == 'term' %}
+                    <tr>
+                        <th>Plazo:</th>
+                        <td>{{ account.term_months }} meses</td>
+                    </tr>
+                    <tr>
+                        <th>Interés Mensual:</th>
+                        <td>{{ account.monthly_interest }}%</td>
+                    </tr>
+                    {% endif %}
+                </table>
+                
+                <div class="mt-3">
+                    <a href="{% url 'account_list' %}" class="btn btn-secondary">
+                        ← Volver
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">🔄 Movimientos Recientes</h5>
+            </div>
+            <div class="card-body">
+                {% if movements %}
+                <div class="list-group">
+                    {% for movement in movements|slice:":10" %}
+                    <div class="list-group-item">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h6 class="mb-1">
+                                <span class="badge 
+                                    {% if movement.movement_type == 'deposit' %}bg-success
+                                    {% elif movement.movement_type == 'withdrawal' %}bg-danger
+                                    {% else %}bg-info{% endif %}">
+                                    {{ movement.get_movement_type_display }}
+                                </span>
+                            </h6>
+                            <small class="text-{% if movement.movement_type == 'deposit' %}success{% else %}danger{% endif %}">
+                                {% if movement.movement_type == 'deposit' %}+{% else %}-{% endif %}
+                                {% if movement.currency == 'USD' %}${% else %}S/{% endif %}
+                                {{ movement.amount }}
+                            </small>
+                        </div>
+                        <p class="mb-1">{{ movement.description }}</p>
+                        <small class="text-muted">{{ movement.created_at|date:"d/m/Y H:i" }}</small>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-muted text-center">No hay movimientos registrados</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

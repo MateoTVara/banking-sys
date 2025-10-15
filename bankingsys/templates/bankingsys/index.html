@@ -28,6 +28,7 @@
     <ul>
       <li><a href="{% url 'bankingsys:index' %}">Home</a></li>
       <li><a href="{% url 'bankingsys:client_register' %}">Registrar Cliente</a></li>
+      <li><a href="{% url 'bankingsys:account_opening' %}">Abrir Nueva Cuenta</a></li>
       <li><a href="{% url 'bankingsys:judicial_hold_register' %}">Registrar Embargo</a></li>
       <li>
         <p>Listas</p>
@@ -35,7 +36,7 @@
           <li><a href="{% url 'bankingsys:tests' %}">Pruebas</a></li>
           <li><a href="{% url 'bankingsys:users' %}">Usuarios</a></li>
           <li><a href="{% url 'bankingsys:clients' %}">Clientes</a></li>
-          <li><a href="{% url 'bankingsys:accounts' %}">Cuentas</a></li>
+          <li><a href="{% url 'bankingsys:account_list' %}">Cuentas</a></li>
           <li><a href="{% url 'bankingsys:judicial_holds' %}">Embargos Judiciales</a></li>
           <li><a href="{% url 'bankingsys:account_movements' %}">Movimientos de Cuenta</a></li>
         </ul>

@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block title %}Lista de Cuentas{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>💼 Cuentas Bancarias</h2>
+    <a href="{% url 'bankingsys:account_opening' %}" class="btn btn-success">
+        ➕ Nueva Cuenta
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Número</th>
+                        <th>Cliente</th>
+                        <th>Tipo</th>
+                        <th>Moneda</th>
+                        <th>Saldo</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for account in accounts %}
+                    <tr>
+                        <td><strong>{{ account.account_number }}</strong></td>
+                        <td>{{ account.client.name }}</td>
+                        <td>
+                            <span class="badge
+                                {% if account.account_type == 'savings' %}bg-info
+                                {% elif account.account_type == 'current' %}bg-primary
+                                {% else %}bg-warning{% endif %}">
+                                {{ account.get_account_type_display }}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge bg-secondary">
+                                {{ account.get_currency_display }}
+                            </span>
+                        </td>
+                        <td>
+                            <strong>
+                                {% if account.currency == 'USD' %}${% else %}S/{% endif %}
+                                {{ account.balance }}
+                            </strong>
+                        </td>
+                        <td>
+                            <span class="badge
+                                {% if account.status == 'active' %}bg-success
+                                {% else %}bg-danger{% endif %}">
+                                {{ account.get_status_display }}
+                            </span>
+                        </td>
+                        <td>
+                            <a href="{% url 'bankingsys:account_detail' account.id %}"
+                               class="btn btn-sm btn-outline-primary">
+                                👁️ Ver
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center text-muted">
+                            No hay cuentas registradas
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
