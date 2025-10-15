@@ -15,6 +15,7 @@ urlpatterns = [
     path('clients/register/', views.client_register, name='client_register'),
     path('accounts/', views.account_list, name='accounts'),
     path('accounts/edit/', views.account_edit, name='account_edit'),
+    path('accounts/register/', views.account_register, name='account_register'),
     path('judicial_holds/', views.judicial_hold_list, name='judicial_holds'),
     path('judicial_holds/register/', views.judicial_hold_register, name='judicial_hold_register'),
     path('judicial_holds/register_form/', views.judicial_hold_register_form, name='judicial_hold_register_form'),
