@@ -5,3 +5,5 @@ scripts/
 my.ini
 .env
 mycommit.bat
+.idea/
+db.sqlite3

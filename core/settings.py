@@ -76,11 +76,8 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # Customed MySQL connection
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'OPTIONS': {
-            'read_default_file': 'my.ini',
-            'init_command': 'SET sql_mode="STRICT_TRANS_TABLES"',   
-        },
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
