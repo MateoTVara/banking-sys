@@ -14,12 +14,15 @@ export class ClientRegisterManager {
    */
   static #setupDomElements() {
     return DomManager.selectDomElements({
+      formContainer: '.form-container',
       form: '#register-client-form',
+      searchInput: '.searcher > input',
       searchButton: '#register-client-form button[type="button"]',
       rucDniInput: '#ruc-dni',
       nameField: '#client-name',
       clientTypeField: "#client-type",
       addressInput: "#client-address",
+      addClientBtn: ".add-client-btn",
     });
   }
 
@@ -249,6 +252,8 @@ export class ClientRegisterManager {
         if (result.success) {
           alert(`Cliente registrado con código: ${result.code}`);
           ClientRegisterManager.#resetFormAfterSubmit(elements.form);
+          elements.formContainer.classList.remove('active');
+          location.reload();
         } else if (result.error) {
           alert(result.error);
         } else {
@@ -262,6 +267,41 @@ export class ClientRegisterManager {
 
 
 
+  static #initAddClientBtnListener(elements) {
+    elements.addClientBtn.addEventListener('click', () => {
+      elements.formContainer.classList.add('active');
+    });
+  }
+
+
+
+  static #initFormContainerListener(elements) {
+    elements.formContainer.addEventListener('click', (e) => {
+      if (e.target === elements.formContainer) {
+        elements.formContainer.classList.remove('active');
+      }
+    });
+  }
+
+
+
+  static #initSearchInputListener(elements) {
+    elements.searchInput.addEventListener('input', () => {
+      document.querySelectorAll('.client-row').forEach(ele => {
+        const idCell = ele.querySelector('.client-id');
+        const nameCell = ele.querySelector('.client-name');
+        if (idCell.textContent.includes(elements.searchInput.value) ||
+            nameCell.textContent.includes(elements.searchInput.value)) {
+          ele.style.display = ''; 
+        } else {
+          ele.style.display = 'none';
+        }
+      });
+    });
+  }
+
+
+
   /**
    * Initialize the client registration form on DOM load
    */
@@ -270,5 +310,8 @@ export class ClientRegisterManager {
     const elements = this.#setupDomElements();
     this.#initSearchButtonListener(elements);
     this.#initFormListener(elements);
+    this.#initAddClientBtnListener(elements);
+    this.#initFormContainerListener(elements);
+    this.#initSearchInputListener(elements);
   }
 }

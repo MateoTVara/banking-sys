@@ -18,7 +18,11 @@ def client_list(request):
     return render(request, 'bankingsys/client/clients.html', context)
 
 def client_register(request):
-    return render(request, 'bankingsys/client/register.html')
+    clients = Client.objects.all()
+    context = {
+        'clients': clients
+    }
+    return render(request, 'bankingsys/client/register.html', context)
 
 @csrf_exempt
 def fetch_identifier_data(request):
