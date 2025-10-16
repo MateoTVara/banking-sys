@@ -4,8 +4,84 @@
   align-items: end;
 }
 
+.actions-bar {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.actions-bar input {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.actions-bar button {
+  background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.actions-bar button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(44, 62, 80, 0.4);
+}
+
 table {
   width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+table thead {
+  background: linear-gradient(135deg, #34495e 0%, #2c3e50 100%);
+  color: white;
+}
+
+table th {
+  padding: 16px 12px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+table td {
+  padding: 14px 12px;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 14px;
+}
+
+table tbody tr {
+  transition: all 0.3s ease;
+}
+
+table tbody tr:hover {
+  background-color: #f8f9fa;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+table tbody tr td[colspan="7"] {
+  text-align: center;
+  padding: 40px;
+  color: #6c757d;
+  font-style: italic;
 }
 
 .account-register-container {
@@ -36,29 +112,34 @@ table {
   font-weight: 700;
   margin-bottom: 1rem;
 }
+
 .account-opening-card .form-label {
   font-weight: 600;
   color: #334155;
   margin-bottom: 0.5rem;
   display: block;
 }
+
 .account-form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 2rem;
   margin-bottom: 1.5rem;
 }
+
 .account-form-col {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
   min-width: 220px;
 }
+
 .account-opening-card .alert {
   border-radius: 6px;
   padding: 0.75rem 1rem;
   margin-bottom: 0.5rem;
 }
+
 .account-opening-card .btn-primary {
   background: #667eea;
   border: none;
@@ -68,9 +149,11 @@ table {
   padding: 0.5rem 1.5rem;
   transition: background 0.2s;
 }
+
 .account-opening-card .btn-primary:hover {
   background: #4f46e5;
 }
+
 .account-opening-card .btn-secondary {
   background: #e0e7ff;
   color: #1e3a8a;
@@ -79,11 +162,13 @@ table {
   padding: 0.5rem 1.5rem;
   margin-left: 1rem;
 }
+
 .account-form-actions {
   margin-top: 2rem;
   display: flex;
   align-items: center;
 }
+
 .account-opening-card .card-info {
   background: #f5f7fa;
   border-radius: 10px;
@@ -91,13 +176,16 @@ table {
   padding: 1rem 1.5rem;
   box-shadow: 0 1px 6px rgba(0,0,0,0.04);
 }
+
 .account-opening-card ul {
   margin: 0;
   padding-left: 1.2rem;
 }
+
 .account-opening-card li {
   margin-bottom: 0.5rem;
 }
+
 @media (max-width: 700px) {
   .account-opening-card {
     padding: 1rem;

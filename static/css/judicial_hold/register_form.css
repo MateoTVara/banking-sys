@@ -2,35 +2,39 @@ main.judicial-hold-register-form-body {
   display: flex;
   flex-direction: column;
   justify-content: start;
+  align-items: stretch;
 }
 
 .judicial-hold-register-form {
-  max-width: 500px;
-  height: fit-content;
-  margin: 0.75rem auto;
+  max-width: 520px;
+  margin: 1.5rem auto;
   padding: 2rem;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 4px 16px rgba(44, 62, 80, 0.10);
 
   display: flex;
   flex-direction: column;
 }
 
 .selected-account-card {
-  border: 1px solid #222;
-  border-radius: 6px;
-  padding: 1rem;
-  margin-bottom: 1rem;
-  background: #f9f9f9;
-  
+  border: 1px solid #e9ecef;
+  border-radius: 10px;
+  padding: 1.25rem;
+  margin-bottom: 1.25rem;
+  background: #f8f9fa;
+  box-shadow: 0 2px 8px rgba(44, 62, 80, 0.08);
+
   display: flex;
   flex-direction: column;
 }
 
 .selected-account-card h2 {
   margin-top: 0;
-  font-size: 1.2rem;
-  color: #222;
+  font-size: 1.15rem;
+  color: #2c3e50;
   text-align: center;
-  align-self: center;
+  font-weight: 600;
 }
 
 .selected-account-card.grid-card {
@@ -49,7 +53,7 @@ main.judicial-hold-register-form-body {
 .account-info-grid > div {
   background: #f3f3f3;
   padding: 0.5rem 0.75rem;
-  border-radius: 4px;
+  border-radius: 6px;
   border: 1px solid #eee;
   font-size: 1rem;
 
@@ -66,52 +70,82 @@ main.judicial-hold-register-form-body {
 }
 
 .embargo-form .form-group {
-  margin-bottom: 0.75rem;
+  margin-bottom: 1rem;
 }
 
 #amount-group.form-group {
-  margin-bottom: 1rem;
+  margin-bottom: 1.25rem;
 }
 
 .embargo-form label {
   display: block;
   margin-bottom: 0.5rem;
   font-weight: 500;
+  color: #34495e;
 }
 
 .embargo-form input,
 .embargo-form select,
 .embargo-form textarea {
   width: 100%;
-  padding: 0.5rem;
-  border: 1px solid #222;
-  border-radius: 4px;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #e9ecef;
+  border-radius: 6px;
   font-size: 1rem;
+  background: #f9f9f9;
+}
+
+.embargo-form input:focus,
+.embargo-form select:focus,
+.embargo-form textarea:focus {
+  border-color: #34495e;
+  outline: none;
 }
 
 .form-actions {
   display: flex;
   justify-content: flex-end;
   gap: 1rem;
+  margin-top: 1.5rem;
 }
 
 .btn {
   padding: 0.5rem 1.5rem;
   border: none;
-  border-radius: 4px;
-  background: #222;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
   color: #fff;
   cursor: pointer;
   text-decoration: none;
   font-weight: 500;
-  transition: background 0.2s;
+  box-shadow: 0 2px 8px rgba(44, 62, 80, 0.08);
 }
 
 .btn.cancel-btn {
-  background: #aaa;
-  color: #222;
+  background: #e9ecef;
+  color: #34495e;
+  border: 1px solid #ccc;
+}
+
+.btn.submit-btn {
+  box-shadow: 0 2px 8px rgba(44, 62, 80, 0.08);
 }
 
 .btn.submit-btn:hover {
-  background: #555;
+  background: #1a242f;
+  box-shadow: 0 4px 12px rgba(44, 62, 80, 0.15);
+}
+
+@media (max-width: 700px) {
+  .judicial-hold-register-form {
+    max-width: 98vw;
+    padding: 1rem;
+  }
+  .selected-account-card {
+    padding: 0.75rem;
+  }
+  .account-info-grid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem 0;
+  }
 }

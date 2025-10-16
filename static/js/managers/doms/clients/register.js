@@ -16,7 +16,7 @@ export class ClientRegisterManager {
     return DomManager.selectDomElements({
       formContainer: '.form-container',
       form: '#register-client-form',
-      searchInput: '.searcher > input',
+      searchInput: '.actions-bar input[type="text"]',
       searchButton: '#register-client-form button[type="button"]',
       rucDniInput: '#ruc-dni',
       nameField: '#client-name',

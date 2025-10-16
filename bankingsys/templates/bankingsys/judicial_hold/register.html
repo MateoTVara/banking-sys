@@ -11,9 +11,8 @@
 
 {% block content %}
   <section id="judicial-hold-register-section">
-    <div>
+    <div class="actions-bar">
       <input type="text">
-      <button>B</button>
     </div>
     <div>
       {% for client in clients %}
@@ -26,7 +25,6 @@
               {% elif client.ruc %}
                 <p>RUC: {{ client.ruc }}</p>
               {% endif %}
-
               <p>{{ client.get_client_type_display }}</p>
             </div>
           </div>

@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django import forms
+from django.contrib import messages  # <-- Añade esto
 from ..models import Account, Client
 
 class AccountForm(forms.ModelForm):
@@ -43,8 +44,12 @@ def account_edit(request):
     if request.method == 'POST':
         form = AccountForm(request.POST, instance=account)
         if form.is_valid():
-            form.save()
-            return redirect('bankingsys:accounts')
+            new_status = form.cleaned_data['status']
+            if new_status in [Account.Status.INACTIVE, Account.Status.CLOSED] and account.balance > 0:
+                messages.error(request, "No se puede inactivar ni cerrar la cuenta mientras tenga saldo.")
+            else:
+                form.save()
+                return redirect('bankingsys:account_register')
     else:
         form = AccountForm(instance=account)
     context = {

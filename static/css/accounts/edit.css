@@ -2,35 +2,33 @@ main.account-edit-form-body {
   display: flex;
   flex-direction: column;
   justify-content: start;
-  align-items: start;
+  align-items: stretch;
+  position: relative;
 }
 
 main.account-edit-form-body > form {
-  padding: 24px;
-  border: 3px solid black;
-  border-radius: 8px;
+  position: relative;
   margin: auto;
-  width: clamp(300px, 50%, 600px);
-  height: 95%;
-  max-height: 600px;
+  max-width: 600px;
+  width: 100%;
+  padding: 2rem 2rem 1.5rem 2rem;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 4px 16px rgba(44, 62, 80, 0.10);
+  border: none;
   overflow: auto;
-  scrollbar-width: none;
 
   display: flex;
   flex-direction: column;
-}
-
-main.account-edit-form-body > form > *:nth-child(2) {
-  margin-top: auto;
-}
-
-main.account-edit-form-body > form > *:last-child {
-  margin-bottom: auto;
+  gap: 1.5rem;
 }
 
 form > h2 {
   text-align: center;
   margin-bottom: 12px;
+  font-size: 1.2rem;
+  color: #2c3e50;
+  font-weight: 600;
 }
 
 form > .client-info {
@@ -45,7 +43,9 @@ form > .client-info {
 }
 
 .client-info > h3 {
-  text-align: center  ;
+  text-align: center;
+  font-size: 1rem;
+  color: #34495e;
 }
 
 form > .actions {
@@ -54,43 +54,48 @@ form > .actions {
   display: flex;
   flex-direction: row;
   align-self: flex-end;
-  gap: 4px;
+  gap: 8px;
 }
 
 .actions > * {
   padding: 0.5rem 1.5rem;
   border: none;
-  border-radius: 4px;
-  background: #222;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
   color: #fff;
   cursor: pointer;
   text-decoration: none;
   font-weight: 500;
-  transition: background 0.2s;
-  align-content: center;
+  font-size: 15px;
+  transition: all 0.3s ease;
+  box-shadow: none;
 }
 
 .actions > a {
-  background: #aaa;
-  color: #222;
+  background: #e9ecef;
+  color: #34495e;
+  border: 1px solid #ccc;
 }
 
 .actions > a:hover {
-  background: #888;
+  background: #cfd8dc;
 }
 
 .actions > button:hover {
-  background: #555;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(44, 62, 80, 0.15);
+  background: #34495e;
 }
 
 .account-data {
-  background: #f7f7f7;
-  border: 2px solid #ddd;
-  border-radius: 8px;
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 10px;
   padding: 18px 24px;
   margin-bottom: 16px;
   width: 100%;
   box-sizing: border-box;
+  box-shadow: 0 2px 8px rgba(44, 62, 80, 0.08);
 }
 
 .account-data dl {
@@ -122,26 +127,41 @@ form .form-group {
   gap: 12px;
 }
 
-form select {
+form select,
+form input[type="text"],
+form input[type="number"],
+form input[type="email"] {
   flex: 1;
   padding: 0.5rem 1rem;
-  border: 2px solid #bbb;
-  border-radius: 6px;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
   background: #fafafa;
   color: #222;
   font-size: 1rem;
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, box-shadow 0.2s;
   outline: none;
   box-sizing: border-box;
 }
 
-form select:focus {
-  border-color: #222;
-  background: #f0f0f0;
+form select:focus,
+form input[type="text"]:focus,
+form input[type="number"]:focus,
+form input[type="email"]:focus {
+  border-color: #3498db;
+  background: #f0f6fc;
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.08);
 }
 
 @media (max-width: 768px) {
   main.account-edit-form-body > form {
-    min-width: 95%;
+    max-width: 98vw;
+    padding: 1rem;
+  }
+  .account-data {
+    padding: 12px;
+  }
+  .account-data dl {
+    grid-template-columns: 1fr;
+    column-gap: 0;
   }
 }

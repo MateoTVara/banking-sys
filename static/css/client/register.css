@@ -1,5 +1,3 @@
-/* Clients Register */
-
 main.cliente-register-body {
   display: flex;
   flex-direction: column;
@@ -11,31 +9,101 @@ main.cliente-register-body {
   display: flex;
   flex-direction: row;
   gap: 8px;
+  margin-bottom: 20px;
 }
 
-.actions-bar > .searcher {
-  display: flex;
+.actions-bar input {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.add-client-btn {
+  background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.add-client-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(44, 62, 80, 0.4);
 }
 
 table {
   width: 100%;
-  margin-top: 16px;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+table thead {
+  background: linear-gradient(135deg, #34495e 0%, #2c3e50 100%);
+  color: white;
+}
+
+table th {
+  padding: 16px 12px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+table td {
+  padding: 14px 12px;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 14px;
+}
+
+table tbody tr {
+  transition: all 0.3s ease;
+}
+
+table tbody tr:hover {
+  background-color: #f8f9fa;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.client-id {
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.client-name {
+  font-weight: 500;
+  color: #34495e;
+}
+
+table tbody tr:last-child td {
+  border-bottom: none;
 }
 
 #register-client-form {
   --inline-padding: 32px;
-  --block-padding: 16px;
-  width: calc(clamp(250px, 30%, 400px) + var(--inline-padding) * 2);
-  height: calc(clamp(350px, 75%, 425px) + var(--block-padding) * 2);
+  --block-padding: 24px;
+  max-width: 600px;
+  width: 100%;
+  height: calc(clamp(380px, 80%, 500px) + var(--block-padding) * 2);
   min-width: 0;
   min-height: 0;
   overflow: auto;
   scrollbar-width: none;
-  padding: var(--block-padding) var(--inline-padding);
-  border: 3px solid black;
-  border-radius: 8px;
+  padding: 2rem;
+  border: none;
+  border-radius: 14px;
   margin: auto;
-  background-color: #fff;
+  background: #fff;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.08);
 
   display: flex;
   flex-direction: column;
@@ -44,15 +112,25 @@ table {
   gap: 24px;
 }
 
-.form-container {
+#register-client-form::before {
+  content: '';
   position: absolute;
-  left: -32px;
-  top: -16px;
-  width: calc(100% + 32px);
-  height: calc(100% + 16px);
-  background-color: rgba(0, 0, 0, 0.5);
-  
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  border-radius: 16px 16px 0 0;
+}
+
+.form-container {
   display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: calc(100% + var(--block-padding, 0px));
+  width: calc(100% + var(--inline-padding, 0px));
+  background-color: rgba(0,0,0,0.5);
+  z-index: 1000;
   justify-content: center;
   align-items: center;
 }
@@ -62,47 +140,81 @@ table {
 }
 
 #register-client-form > *:first-child > #ruc-dni:invalid {
-  outline: 1px solid red;
-}
-
-#register-client-form button {
-  height: calc(1rem + 15px);
-  padding: 0px 8px;
-  border-radius: 4px;
-  border: none;
-  background-color: #222;
-  color: #fff;
-  cursor: pointer;
-  transition: background 0.2s ease;
-}
-
-#register-client-form button:hover {
-  background-color: #555;
-}
-
-#register-client-form input {
-  border: 1px solid #222;
-  border-radius: 4px;
+  outline: 2px solid #e74c3c;
+  border-color: #e74c3c;
 }
 
 #register-client-form > *:first-child {
   margin-top: auto;
+  width: 100%;
+  display: flex;
+  gap: 8px;
 }
 
-#register-client-form > *:first-child button {
-  width: 32px;
-  height: 32px;
+#register-client-form > *:first-child input {
+  flex: 1;
+  padding: 10px 12px;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: border-color 0.1s;
+}
+
+#register-client-form > *:first-child input:focus {
+  outline: none;
+}
+
+#register-client-form > *:first-child button,
+#register-client-form > button[type="submit"] {
+  background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 15px;
+  transition: all 0.3s ease;
+  box-shadow: none;
+}
+
+#register-client-form > *:first-child button:hover,
+#register-client-form > button[type="submit"]:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(44, 62, 80, 0.4);
+  background: #34495e;
 }
 
 #register-client-form > *:last-child {
   margin-bottom: auto;
+  width: 100%;
+}
+
+#register-client-form > button[type="submit"] {
+  width: 100%;
+  padding: 0.75rem 0;
+  background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+  border: none;
+  color: #fff;
+  font-weight: 600;
+  border-radius: 6px;
+  font-size: 16px;
+  transition: background 0.2s;
+  margin-top: 1rem;
+}
+
+.retrived-data {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 #register-client-form > div:nth-child(2) {
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  gap: 12px;
+  gap: 20px;
+  width: 100%;
 }
 
 #register-client-form > div:nth-child(2) > div {
@@ -111,8 +223,14 @@ table {
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
-  row-gap: 4px;
-  column-gap: 64px;
+  row-gap: 8px;
+  column-gap: 20px;
+  padding: 12px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+#register-client-form > div:nth-child(2) > div:last-child {
+  border-bottom: none;
 }
 
 #register-client-form > div:nth-child(2) > div > * {
@@ -122,5 +240,69 @@ table {
 #client-name,
 #client-type {
   text-align: center;
-  flex: 1
+  flex: 1;
+  font-weight: 600;
+  color: #2c3e50;
+  background: #f8f9fa;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid #e9ecef;
+}
+
+#register-client-form label {
+  font-weight: 600;
+  color: #334155;
+  font-size: 14px;
+  margin-bottom: 0.25rem;
+}
+
+#register-client-form input[type="text"],
+#register-client-form input[type="tel"],
+#register-client-form input[type="email"] {
+  padding: 10px 12px;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  background: white;
+}
+
+#register-client-form input[type="text"]:focus,
+#register-client-form input[type="tel"]:focus,
+#register-client-form input[type="email"]:focus {
+  border-color: #3498db;
+  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+  outline: none;
+}
+
+table tbody tr td[colspan="7"] {
+  text-align: center;
+  padding: 40px;
+  color: #6c757d;
+  font-style: italic;
+}
+
+#register-client-form::-webkit-scrollbar {
+  width: 6px;
+}
+
+#register-client-form::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+#register-client-form::-webkit-scrollbar-thumb {
+  background: #3498db;
+  border-radius: 3px;
+}
+
+#register-client-form::-webkit-scrollbar-thumb:hover {
+  background: #2980b9;
+}
+
+@media (max-width: 700px) {
+  #register-client-form {
+    padding: 1rem;
+    max-width: 98vw;
+  }
 }
