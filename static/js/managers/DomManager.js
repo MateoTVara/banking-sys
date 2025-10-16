@@ -63,6 +63,8 @@ export class DomManager {
     window.addEventListener('DOMContentLoaded', () => {
       if (window.location.pathname === '/clients/register/') {
         ClientManager.initRegisterMngr();
+      } else if (window.location.pathname === '/accounts/register/') {
+        AccountManager.initRegisterAccountManager();
       } else if (window.location.pathname === '/judicial_holds/register/') {
         JudicialHoldManager.initRegisterMngr();
       } else if (window.location.pathname === '/judicial_holds/register_form/') {

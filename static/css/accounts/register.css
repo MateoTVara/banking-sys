@@ -1,5 +1,25 @@
 .account-register-body {
   display: flex;
+  flex-direction: column;
+  align-items: end;
+}
+
+table {
+  width: 100%;
+}
+
+.account-register-container {
+  display: none;
+  position: absolute;
+  top: calc(-1 * var(--block-padding));
+  left: calc(-1 * var(--inline-padding));
+  height: calc(100% + var(--block-padding));
+  width: calc(100% + var(--inline-padding));
+  background-color: rgba(0,0,0,0.5);
+}
+
+.account-register-container.active {
+  display: flex;
 }
 
 .account-opening-card {
@@ -10,6 +30,7 @@
   box-shadow: 0 2px 16px rgba(0,0,0,0.08);
   padding: 2rem;
 }
+
 .account-opening-card h4 {
   color: #1e3a8a;
   font-weight: 700;

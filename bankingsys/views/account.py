@@ -54,16 +54,23 @@ def account_edit(request):
     return render(request, 'bankingsys/account/account_edit.html', context)
 
 def account_register(request):
+    accounts = Account.objects.all()
+
     if request.method == 'POST':
         form = AccountOpeningForm(request.POST)
         if form.is_valid():
             account = form.save(commit=False)
             account.balance = form.cleaned_data['initial_deposit']
             account.save()
-            return redirect('bankingsys:accounts')
+            return redirect('bankingsys:account_register')
     else:
         form = AccountOpeningForm()
-    return render(request, 'bankingsys/account/register.html', {'form': form})
+
+    context = {
+        'form': form,
+        'accounts': accounts,
+    }
+    return render(request, 'bankingsys/account/register.html', context)
 
 def account_list(request):
     accounts = Account.objects.all()
