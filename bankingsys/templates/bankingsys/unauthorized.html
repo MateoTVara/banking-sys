@@ -1,0 +1,12 @@
+<!-- bankingsys/templates/bankingsys/unauthorized.html -->
+<!DOCTYPE html>
+<html>
+<head>
+  <title>No autorizado</title>
+</head>
+<body>
+  <h2>No tienes autorización para acceder a esta página.</h2>
+  <p>Si crees que esto es un error, contacta al administrador.</p>
+  <a href="{% url 'bankingsys:logout' %}">Cerrar sesión</a>
+</body>
+</html>

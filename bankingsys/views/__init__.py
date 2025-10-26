@@ -1,4 +1,4 @@
-from .auth import login_view, logout_view
+from .auth import *
 from .general import index
 from .test import test_list
 from .user import user_list

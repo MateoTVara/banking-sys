@@ -73,3 +73,27 @@ class LoginRequiredMiddleware:
         
         response = self.get_response(request)
         return response
+
+class ClientGroupRestrictionMiddleware:
+    """
+    Middleware que restringe el acceso a todas las vistas (excepto login y logout)
+    para usuarios autenticados que pertenezcan al grupo 'clients'.
+    """
+    def __init__(self, get_response):
+        self.get_response = get_response
+        self.exempt_urls = [
+            reverse('bankingsys:login'),
+            reverse('bankingsys:logout'),
+            reverse('bankingsys:unauthorized'),  # Agrega la nueva vista
+        ]
+
+    def __call__(self, request):
+        path = request.path_info
+        # Solo aplica si el usuario está autenticado
+        if request.user.is_authenticated:
+            # Verifica si el usuario pertenece al grupo 'clients'
+            if request.user.groups.filter(name='clients').exists():
+                # Si la URL no es login ni logout, redirige a login
+                if not any(path.startswith(url) for url in self.exempt_urls):
+                    return redirect('bankingsys:unauthorized')
+        return self.get_response(request)
