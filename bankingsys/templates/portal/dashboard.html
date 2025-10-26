@@ -1,12 +1,62 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{% static 'css/portal/dashboard.css' %}?v=1.0">
+  {% block styles %}{% endblock styles %}
   <title>Portal</title>
 </head>
 <body>
-  <h1>Bienvenido, {{ client.name }}!</h1>
-  <a href="{% url 'logout' %}">Cerrar Sesión</a>
+  <header>
+  {% block header %}
+    <h1>Portal Dashboard</h1>
+    <a class="logout" href="{% url 'logout' %}">Cerrar Sesión</a>
+  {% endblock header %}
+  </header>
+
+  <main>
+    <div class="notifications">
+      {% if messages %}
+        <ul class="messages">
+          {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>
+              <button class="close-notification">x</button>
+              {{ message }}
+            </li>
+          {% endfor %}
+        </ul>
+      {% endif %} 
+    </div>
+
+    {% block content %}
+    {% endblock content %}
+  </main>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
+        document.querySelectorAll('.messages li').forEach(li => {
+          li.classList.add('disabled');
+          setTimeout(() => {
+            li.classList.add('removed');
+            li.remove();
+          }, 500);
+        });
+      }, 5000);
+    });
+
+    document.querySelectorAll('.close-notification').forEach(ele => {
+      ele.addEventListener('click', () => {
+        const li = ele.parentElement;
+        li.classList.add('disabled');
+        setTimeout(() => {
+          li.classList.add('removed');
+          li.remove();
+        }, 500);
+      });
+    });
+  </script>
 </body>
 </html>

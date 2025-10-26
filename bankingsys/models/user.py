@@ -11,3 +11,5 @@ class User(AbstractUser):
         blank=True,
         help_text="Only for users in the 'client' group"
     )
+    first_name = models.CharField(max_length=150, null=True, blank=True)
+    last_name = models.CharField(max_length=150, null=True, blank=True)

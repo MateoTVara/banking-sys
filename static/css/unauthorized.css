@@ -1,0 +1,44 @@
+body {
+  display: flex;
+  flex-direction: column;
+  width: 100dvw;
+  height: 100dvh;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+}
+
+body > * {
+  border: none;
+}
+
+body > h2:first-child,
+body > p:nth-child(2) {
+  margin-bottom: 1rem;
+}
+
+.actions {
+  display: flex;
+  flex-direction: row;
+  gap: 2rem;
+
+  & > *:first-child {
+    color: red;
+  }
+
+  & > *:last-child {
+    color: green;
+  }
+
+  & > * {
+    will-change: transform;
+    transition: transform 0.2s ease-in-out;
+
+    &:hover {
+    cursor: pointer;
+    transform: scale(1.25);
+  }
+  }
+}

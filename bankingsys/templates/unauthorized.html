@@ -1,12 +1,24 @@
 <!-- bankingsys/templates/bankingsys/unauthorized.html -->
+
+{% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{% static 'css/styles.css' %}?v=1">
+  <link rel="stylesheet" href="{% static 'css/unauthorized.css' %}?v=1">
   <title>No autorizado</title>
 </head>
 <body>
+  {% for message in messages %}
+    <div class="alert alert-warning">{{ message }}</div>
+  {% endfor %}
   <h2>No tienes autorización para acceder a esta página.</h2>
   <p>Si crees que esto es un error, contacta al administrador.</p>
-  <a href="{% url 'logout' %}">Cerrar sesión</a>
+  <div class="actions">
+    <a href="{% url 'logout' %}">Cerrar sesión</a>
+    <a href="{% url 'portal:dashboard' %}">Ir al Portal</a>
+  </div>
 </body>
 </html>
