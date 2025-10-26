@@ -17,11 +17,14 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from bankingsys.views import login_view, logout_view, unauthorized_view
+from bankingsys.views.root import root_redirect
 
 urlpatterns = [
+    path('', root_redirect, name='root'),
     path('admin/', admin.site.urls),
     path('login/', login_view, name='login'),
     path('logout/', logout_view, name='logout'),
     path('unauthorized/', unauthorized_view, name='unauthorized'),
     path('management/', include('bankingsys.urls')),
+    path('public/', include('bankingsys.urls_portal')),
 ]

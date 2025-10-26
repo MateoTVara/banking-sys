@@ -22,10 +22,14 @@ class ExchangeRateRequiredMiddleware:
             '/admin/',
             '/static/',
             '/media/',
-            reverse('login'),      # <-- Cambiado
-            reverse('logout'),     # <-- Cambiado
-            reverse('bankingsys:exchange_rate_setup'),
+            '/public/',  # Portal de clientes no requiere tipo de cambio
+            '/login/',
+            '/logout/',
         ]
+        
+        # También exentar la ruta de configuración de tipo de cambio
+        if path.startswith('/management/exchange-rate/setup/'):
+            return self.get_response(request)
         
         # Verifica si la URL actual está en la lista de URLs exentas
         if any(path.startswith(url) for url in exempt_urls):
@@ -55,45 +59,52 @@ class LoginRequiredMiddleware:
     """
     def __init__(self, get_response):
         self.get_response = get_response
-        # URLs que no requieren autenticación
-        self.exempt_urls = [
-            reverse('login'),      # <-- Cambiado
-            '/admin/',
-        ]
-        if hasattr(settings, 'LOGIN_EXEMPT_URLS'):
-            self.exempt_urls += settings.LOGIN_EXEMPT_URLS
 
     def __call__(self, request):
         if not request.user.is_authenticated:
             path = request.path_info
+            # URLs que no requieren autenticación
+            exempt_urls = [
+                '/login/',
+                '/admin/',
+            ]
+            if hasattr(settings, 'LOGIN_EXEMPT_URLS'):
+                exempt_urls += settings.LOGIN_EXEMPT_URLS
+            
             # Verifica si la URL actual está en la lista de URLs exentas
-            if not any(path.startswith(url) for url in self.exempt_urls):
-                login_url = reverse('login')   # <-- Cambiado
-                return redirect(f'{login_url}?next={path}')
+            if not any(path.startswith(url) for url in exempt_urls):
+                return redirect(f'/login/?next={path}')
         
         response = self.get_response(request)
         return response
 
 class ClientGroupRestrictionMiddleware:
     """
-    Middleware que restringe el acceso a todas las vistas (excepto login y logout)
-    para usuarios autenticados que pertenezcan al grupo 'clients'.
+    Middleware que restringe el acceso de usuarios del grupo 'clients' solo al portal público.
+    Los usuarios 'clients' solo pueden acceder a /public/, login y logout.
     """
     def __init__(self, get_response):
         self.get_response = get_response
-        self.exempt_urls = [
-            reverse('login'),
-            reverse('logout'),
-            reverse('unauthorized'),
-        ]
 
     def __call__(self, request):
         path = request.path_info
+        # URLs exentas que siempre deben ser accesibles
+        exempt_urls = [
+            '/login/',
+            '/logout/',
+            '/unauthorized/',
+            '/static/',
+            '/media/',
+            '/admin/',
+        ]
+        
         # Solo aplica si el usuario está autenticado
         if request.user.is_authenticated:
             # Verifica si el usuario pertenece al grupo 'clients'
             if request.user.groups.filter(name='clients').exists():
-                # Si la URL no es login ni logout, redirige a unauthorized
-                if not any(path.startswith(url) for url in self.exempt_urls):
-                    return redirect('unauthorized')
+                # Permitir acceso a /public/ y URLs exentas
+                if path.startswith('/public/') or any(path.startswith(url) for url in exempt_urls):
+                    return self.get_response(request)
+                # Bloquear acceso a /management/ y otras rutas
+                return redirect('/unauthorized/')
         return self.get_response(request)
