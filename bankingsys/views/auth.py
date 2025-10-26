@@ -20,17 +20,17 @@ def login_view(request):
         else:
             messages.error(request, 'Nombre de usuario o contraseña inválidos.')
 
-    return render(request, 'bankingsys/login.html')
+    return render(request, 'login.html')
 
 
 def logout_view(request):
     logout(request)
     messages.success(request, 'Has cerrado sesión correctamente.')
-    return redirect('bankingsys:login')
+    return redirect('login')
 
 
 def unauthorized_view(request):
     """
     Vista para usuarios sin autorización (grupo 'clients').
     """
-    return render(request, 'bankingsys/unauthorized.html')
+    return render(request, 'unauthorized.html')

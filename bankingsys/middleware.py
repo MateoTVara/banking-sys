@@ -22,8 +22,8 @@ class ExchangeRateRequiredMiddleware:
             '/admin/',
             '/static/',
             '/media/',
-            reverse('bankingsys:login'),
-            reverse('bankingsys:logout'),
+            reverse('login'),      # <-- Cambiado
+            reverse('logout'),     # <-- Cambiado
             reverse('bankingsys:exchange_rate_setup'),
         ]
         
@@ -57,7 +57,7 @@ class LoginRequiredMiddleware:
         self.get_response = get_response
         # URLs que no requieren autenticación
         self.exempt_urls = [
-            reverse('bankingsys:login'),
+            reverse('login'),      # <-- Cambiado
             '/admin/',
         ]
         if hasattr(settings, 'LOGIN_EXEMPT_URLS'):
@@ -68,7 +68,7 @@ class LoginRequiredMiddleware:
             path = request.path_info
             # Verifica si la URL actual está en la lista de URLs exentas
             if not any(path.startswith(url) for url in self.exempt_urls):
-                login_url = reverse('bankingsys:login')
+                login_url = reverse('login')   # <-- Cambiado
                 return redirect(f'{login_url}?next={path}')
         
         response = self.get_response(request)
@@ -82,9 +82,9 @@ class ClientGroupRestrictionMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
         self.exempt_urls = [
-            reverse('bankingsys:login'),
-            reverse('bankingsys:logout'),
-            reverse('bankingsys:unauthorized'),  # Agrega la nueva vista
+            reverse('login'),           # <-- Cambiado
+            reverse('logout'),          # <-- Cambiado
+            reverse('unauthorized'),    # <-- Cambiado
         ]
 
     def __call__(self, request):
@@ -95,5 +95,5 @@ class ClientGroupRestrictionMiddleware:
             if request.user.groups.filter(name='clients').exists():
                 # Si la URL no es login ni logout, redirige a login
                 if not any(path.startswith(url) for url in self.exempt_urls):
-                    return redirect('bankingsys:unauthorized')
+                    return redirect('unauthorized')   # <-- Cambiado
         return self.get_response(request)
