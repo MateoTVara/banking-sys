@@ -61,15 +61,15 @@ export class DomManager {
     });
 
     window.addEventListener('DOMContentLoaded', () => {
-      if (window.location.pathname === '/clients/register/') {
+      if (window.location.pathname === '/management/clients/register/') {
         ClientManager.initRegisterMngr();
-      } else if (window.location.pathname === '/accounts/register/') {
+      } else if (window.location.pathname === '/management/accounts/register/') {
         AccountManager.initRegisterAccountManager();
-      } else if (window.location.pathname === '/judicial_holds/register/') {
+      } else if (window.location.pathname === '/management/judicial_holds/register/') {
         JudicialHoldManager.initRegisterMngr();
-      } else if (window.location.pathname === '/judicial_holds/register_form/') {
+      } else if (window.location.pathname === '/management/judicial_holds/register_form/') {
         JudicialHoldManager.initRegisterFormMngr();
-      } else if (window.location.pathname === '/accounts/edit/') {
+      } else if (window.location.pathname === '/management/accounts/edit/') {
         AccountManager.initEditAccountManager();
       }
     });

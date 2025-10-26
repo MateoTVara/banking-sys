@@ -82,9 +82,9 @@ class ClientGroupRestrictionMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
         self.exempt_urls = [
-            reverse('login'),           # <-- Cambiado
-            reverse('logout'),          # <-- Cambiado
-            reverse('unauthorized'),    # <-- Cambiado
+            reverse('login'),
+            reverse('logout'),
+            reverse('unauthorized'),
         ]
 
     def __call__(self, request):
@@ -93,7 +93,7 @@ class ClientGroupRestrictionMiddleware:
         if request.user.is_authenticated:
             # Verifica si el usuario pertenece al grupo 'clients'
             if request.user.groups.filter(name='clients').exists():
-                # Si la URL no es login ni logout, redirige a login
+                # Si la URL no es login ni logout, redirige a unauthorized
                 if not any(path.startswith(url) for url in self.exempt_urls):
-                    return redirect('unauthorized')   # <-- Cambiado
+                    return redirect('unauthorized')
         return self.get_response(request)

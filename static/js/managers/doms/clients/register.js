@@ -60,7 +60,7 @@ export class ClientRegisterManager {
   static async #fetchClientData(identifier) {
     const formData = new FormData();
     formData.append('identifier', identifier);
-    return await ApiManager.fetchData('/api/fetch_identifier/', formData);
+    return await ApiManager.fetchData('/management/api/fetch_identifier/', formData);
   }
 
 
@@ -247,7 +247,7 @@ export class ClientRegisterManager {
       const formData = ClientRegisterManager.#buildFormData(extractedData);
 
       try {
-        const result = await ApiManager.fetchData('/api/register_client/', formData);
+        const result = await ApiManager.fetchData('/management/api/register_client/', formData);
         
         if (result.success) {
           alert(`Cliente registrado con código: ${result.code}`);
