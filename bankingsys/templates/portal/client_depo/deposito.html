@@ -15,7 +15,6 @@
   <header class="main-header">
   </header>
 
-  <!-- Barra de navegación horizontal (Sin cambios) -->
   <nav class="top-navbar">
     <div class="nav-container">
       <a href="{% url 'portal:dashboard' %}" class="nav-link">
@@ -38,26 +37,20 @@
       </a>
     </div>
   </nav>
-  <!-- ========= INICIO: BLOQUE DE MENSAJES ========= -->
   <div class="message-container">
     {% if messages %}
       <ul class="messages">
         {% for message in messages %}
-          <!-- La clase 'error' o 'success' viene de Django -->
           <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>
             {{ message }}
-            <!-- Opcional: un botón para cerrar -->
-            <!-- <button class="close-notification">x</button> -->
           </li>
         {% endfor %}
       </ul>
     {% endif %} 
   </div>
 
-  <!-- ========= CONTENIDO PRINCIPAL (SIN CAMBIOS) ========= -->
   <main class="container-split">
 
-    <!-- Columna Izquierda: Información del Cliente y Cuentas -->
     <section class="client-details-column">
       
       <div class="client-info-card">
@@ -90,7 +83,6 @@
       </div>
     </section>
 
-    <!-- Columna Derecha: Formulario de Depósito -->
     <section class="form-column">
       <h2>Realizar un Depósito</h2>
       <p>Selecciona la cuenta de destino e ingresa el monto a depositar.</p>
@@ -122,10 +114,7 @@
     </section>
 
   </main>
-  <!-- ========= FIN DEL CONTENIDO ========= -->
 
-
-  <!-- Pie de página (Sin cambios) -->
   <footer class="main-footer">
     <p>© 2025 Banco Digital - Todos los derechos reservados</p>
   </footer>

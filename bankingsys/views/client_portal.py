@@ -77,19 +77,15 @@ def portal_deposito(request):
                 
                 # Obtenemos la cuenta de forma segura
                 account_to_deposit = Account.objects.select_for_update().get(id=account_id, client=client)
-                
-                # --- ¡NUEVA LÓGICA DE NEGOCIO! ---
+
                 # REGLA: No se puede depositar en Cuentas a Plazo
                 if account_to_deposit.account_type == Account.AccountType.TERM:
                     messages.error(request, 'No se pueden realizar depósitos a cuentas de Plazo Fijo.')
                     return redirect('portal:deposito')
-                # --- Fin de la regla ---
 
                 # Si es Ahorro o Corriente, procede con el depósito
                 account_to_deposit.balance = F('balance') + deposit_amount
                 account_to_deposit.save()
-            
-            # --- Fin de la Transacción ---
             messages.success(request, f"¡Depósito de S/ {deposit_amount:.2f} realizado con éxito!")
             return redirect('portal:deposito')
 
@@ -103,7 +99,6 @@ def portal_deposito(request):
         return redirect('portal:deposito')
 
     # 3. Lógica para cargar la página (GET)
-    # Obtenemos las cuentas del cliente
     accounts = Account.objects.filter(client=client)
     
     context = {
@@ -112,9 +107,6 @@ def portal_deposito(request):
     }
     
     return render(request, 'portal/client_depo/deposito.html', context)
-
-
-# --- FUNCIÓN DE RETIRO (EXISTENTE) ---
 
 @login_required
 def portal_retiro(request):
@@ -159,8 +151,6 @@ def portal_retiro(request):
                 # 1. Obtener la cuenta
                 account_to_withdraw = Account.objects.select_for_update().get(id=account_id, client=client)
                 
-                # 2. *** REGLAS DE NEGOCIO PARA RETIRO ***
-                
                 # REGLA 1: Cuenta a Plazos (TERM)
                 if account_to_withdraw.account_type == Account.AccountType.TERM:
                     messages.error(request, 'No se pueden realizar retiros de cuentas a Plazo Fijo.')
@@ -173,15 +163,11 @@ def portal_retiro(request):
                         return redirect('portal:retiro')
                     
                 # REGLA 3: Cuenta Corriente (CURRENT)
-                # No hay validación de fondos, permite sobregiro (saldo negativo)
                 elif account_to_withdraw.account_type == Account.AccountType.CURRENT:
-                    pass # Se salta la validación de fondos
-                
-                # 3. Ejecutar el retiro (si pasó las validaciones)
+                    pass 
                 account_to_withdraw.balance = F('balance') - withdrawal_amount
                 account_to_withdraw.save()
             
-            # --- Fin de la Transacción ---
             messages.success(request, f"¡Retiro de S/ {withdrawal_amount:.2f} realizado con éxito!")
             return redirect('portal:retiro')
 
@@ -237,26 +223,19 @@ def portal_retiro(request):
                 account_to_withdraw = Account.objects.select_for_update().get(id=account_id, client=client)
                 
                 # REGLA 1: CUENTA A PLAZOS (No se puede retirar)
-                # Valor de tu modelo: 'term'
                 if account_to_withdraw.account_type == 'term':
                     messages.error(request, 'No se pueden realizar retiros de Cuentas a Plazos.')
                     raise Exception('Retiro de Plazos no permitido')
 
                 # REGLA 2: CUENTA DE AHORRO (No puede sobregirarse)
-                # Valor de tu modelo: 'savings'
                 elif account_to_withdraw.account_type == 'savings':
                     if withdrawal_amount > account_to_withdraw.balance:
                         messages.error(request, 'Fondos insuficientes. Las cuentas de Ahorro no pueden sobregirarse.')
                         raise Exception('Fondos insuficientes Ahorro')
                 
                 # REGLA 3: CUENTA CORRIENTE (Sí puede sobregirarse)
-                # Valor de tu modelo: 'current'
                 elif account_to_withdraw.account_type == 'current':
-                    # No hay validación de fondos, se permite el sobregiro.
-                    # El código continúa y restará el saldo.
                     pass
-                
-                # REGLA POR DEFECTO (Para otros tipos de cuenta no listados)
                 else:
                     # Aplicamos la regla más segura (no sobregirar)
                     if withdrawal_amount > account_to_withdraw.balance:
@@ -267,8 +246,6 @@ def portal_retiro(request):
                 account_to_withdraw.balance = F('balance') - withdrawal_amount
                 account_to_withdraw.save()
             
-            # --- FIN DE LA LÓGICA DE NEGOCIO ---
-
             messages.success(request, f"¡Retiro de S/ {withdrawal_amount:.2f} realizado con éxito!")
             return redirect('portal:retiro')
 
@@ -276,14 +253,12 @@ def portal_retiro(request):
             messages.error(request, 'La cuenta seleccionada no existe o no te pertenece.')
         except Exception as e:
             if str(e) in ('Retiro de Plazos no permitido', 'Fondos insuficientes Ahorro', 'Fondos insuficientes Default'):
-                # Si el error fue uno de los que lanzamos, el mensaje ya está puesto.
                 pass
             else:
                 messages.error(request, f'Ocurrió un error inesperado: {e}')
         
         return redirect('portal:retiro')
 
-    # Lógica GET (mostrar la página)
     accounts = Account.objects.filter(client=client)
     context = {
         'client': client,

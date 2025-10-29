@@ -43,11 +43,8 @@
     {% if messages %}
       <ul class="messages">
         {% for message in messages %}
-          <!-- La clase 'error' o 'success' viene de Django -->
           <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>
             {{ message }}
-            <!-- Opcional: un botón para cerrar -->
-            <!-- <button class="close-notification">x</button> -->
           </li>
         {% endfor %}
       </ul>
