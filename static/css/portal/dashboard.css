@@ -1,136 +1,169 @@
-@font-face {
-  font-family: 'Baloo 2';
-  src: url('../../assets/fonts/Baloo2-Regular.woff2') format('woff2'),
-      url('../../assets/fonts/Baloo2-Regular.woff') format('woff');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
+/* static/css/portal/dashboard.css */
+
+/* --- RESET BÁSICO Y BODY --- */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  margin: 0;
+  background-color: #f4f7f6;
+  color: #333;
 }
 
-/* reset */
-
-*, *::before, *::after {
-  box-sizing: border-box;
+/* --- ESTILOS DEL HEADER --- */
+.main-header-dashboard {
+  background-color: #ffffff;
+  border-bottom: 1px solid #e0e0e0;
+  padding: 0 20px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  box-sizing: border-box; /* Para que el padding no afecte el ancho */
+  z-index: 1000;
 }
 
-* {
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  height: 60px; /* Altura fija para el header */
+}
+
+/* Hacemos que cada sección ocupe 1/3 del espacio */
+.header-nav,
+.header-title,
+.header-logout {
+  flex: 1 1 33.33%;
+}
+
+/* 1. LINKS DE NAVEGACIÓN (Izquierda) */
+.header-nav {
+  display: flex;
+  justify-content: flex-start; /* Alinea links a la izquierda */
+  gap: 15px;
+}
+
+.header-nav .nav-link {
+  text-decoration: none;
+  color: #555;
+  font-size: 15px;
+  font-weight: 500;
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.header-nav .nav-link:hover {
+  background-color: #f0f0f0;
+  color: #000;
+}
+
+.header-nav .nav-link.active {
+  background-color: #e0eafc; /* Un azul claro para el activo */
+  color: #0056b3;
+}
+
+/* 2. TÍTULO (Centro) */
+.header-title {
+  text-align: center;
+}
+
+.header-title h1 {
+  font-size: 20px;
+  color: #111;
   margin: 0;
 }
 
-body {
-  line-height: 1.5;
-  -webkit-font-smoothing: antialiased;
-  font-family: 'Baloo 2';
-  background-color: #f9f9f9;
+/* 3. LOGOUT (Derecha) */
+.header-logout {
+  text-align: right;
 }
 
-img, picture, video, canvas, svg {
-  display: block;
-  max-width: 100%;
-}
-
-input, button, textarea, select {
-  font: inherit;
-}
-
-p, h1, h2, h3, h4, h5, h6 {
-  overflow-wrap: break-word;
-}
-
-p {
-  text-wrap: pretty;
-}
-
-h1, h2, h3, h4, h5, h6 {
-  text-wrap: balance;
-}
-
-a {
+.header-logout .logout {
+  color: #d9534f; /* Color rojo para cerrar sesión */
   text-decoration: none;
-  color: inherit;
+  font-size: 15px;
+  font-weight: 500;
+}
+.header-logout .logout:hover {
+  text-decoration: underline;
 }
 
-/* start */
-
-body {
-  min-height: 100dvh;
-
-  display: flex;
-  flex-direction: column;
-}
-
+/* --- CONTENIDO PRINCIPAL --- */
 main {
-  position: relative;
-  flex: 1;
+  padding-top: 80px; /* 60px del header + 20px de espacio */
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-left: 20px;
+  padding-right: 20px;
 }
 
+.dashboard-content {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+/* --- NOTIFICACIONES (Mensajes) --- */
 .notifications {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  max-width: 50%;
-  z-index: 1;
-
-  & .messages {
-    list-style: none;
-    padding: 0;
-
-    & > li {
-      margin-bottom: 0.5rem;
-      position: relative;
-      border: 1px solid #ccc;
-      padding: 0.5rem 1rem;
-      border-radius: 0.5rem;
-      background-color: #fff;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-      transition: opacity 0.5s ease, transform 0.5s ease;
-
-      &.disabled {
-        opacity: 0;
-        transform: translateX(-100%);
-      }
-
-      &.removed {
-        display: none;
-      }
-
-      & .close-notification {
-        position: absolute;
-        top: -4px;
-        right: 4px;
-        width: fit-content;
-        height: 1rem;
-        padding: 0;
-        background: transparent;
-        border: none;
-        font-size: 1rem;
-        cursor: pointer;
-      }
-
-      &:last-child {
-        margin-bottom: 0;
-      }
-    }
-  }
+  /* Contenedor para alinear los mensajes */
+  width: 100%;
+  box-sizing: border-box;
 }
 
-header {
-  position: relative;
-  border: 1px solid #f0f0f0;
+.messages {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 20px 0; /* Espacio debajo de los mensajes */
+}
 
+.messages li {
+  padding: 15px 20px;
+  margin-bottom: 15px;
+  border-radius: 8px;
+  font-weight: bold;
+  font-size: 16px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
+  align-items: center;
+}
 
-  & > a {
-    position: absolute;
-    right: 1rem;
-    transform: translateY(50%);
-    color: red;
-    will-change: transform;
-    transition: transform 0.3s ease;
+/* Color para mensajes de éxito */
+.messages li.success {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
 
-    &:hover {
-      transform: translateY(50%) scale(1.1);
-    }
-  }
+/* Color para mensajes de error */
+.messages li.error {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+/* Botón de cerrar notificación */
+.close-notification {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: inherit; /* Hereda el color del texto (rojo o verde) */
+  opacity: 0.7;
+  padding-left: 15px;
+}
+.close-notification:hover {
+  opacity: 1;
+}
+
+/* --- Script de JS para el fade out --- */
+.messages li.disabled {
+  opacity: 0;
+  transition: opacity 0.5s ease-out;
+}
+.messages li.removed {
+  display: none;
 }

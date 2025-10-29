@@ -1,0 +1,134 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <link rel="stylesheet" href="{% static 'css/portal/navbar.css' %}?v=1.0">
+  <link rel="stylesheet" href="{% static 'css/portal/client_depo/forms.css' %}?v=1.1"> 
+  
+  <title>Depósitos - Portal Cliente</title>
+</head>
+<body>
+  
+  <header class="main-header">
+  </header>
+
+  <!-- Barra de navegación horizontal (Sin cambios) -->
+  <nav class="top-navbar">
+    <div class="nav-container">
+      <a href="{% url 'portal:dashboard' %}" class="nav-link">
+        <span class="nav-text">Inicio</span>
+      </a>
+      <a href="#" class="nav-link">
+        <span class="nav-text">Aperturar Cuenta</span>
+      </a>
+      <a href="{% url 'portal:deposito' %}" class="nav-link active">
+        <span class="nav-text">Depósitos</span>
+      </a>
+      <a href="{% url 'portal:retiro' %}" class="nav-link">
+        <span class="nav-text">Retiros</span>
+      </a>
+      <a href="#" class="nav-link">
+        <span class="nav-text">Transferencia</span>
+      </a>
+      <a href="#" class="nav-link">
+        <span class="nav-text">Historial</span>
+      </a>
+    </div>
+  </nav>
+  <!-- ========= INICIO: BLOQUE DE MENSAJES ========= -->
+  <div class="message-container">
+    {% if messages %}
+      <ul class="messages">
+        {% for message in messages %}
+          <!-- La clase 'error' o 'success' viene de Django -->
+          <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>
+            {{ message }}
+            <!-- Opcional: un botón para cerrar -->
+            <!-- <button class="close-notification">x</button> -->
+          </li>
+        {% endfor %}
+      </ul>
+    {% endif %} 
+  </div>
+
+  <!-- ========= CONTENIDO PRINCIPAL (SIN CAMBIOS) ========= -->
+  <main class="container-split">
+
+    <!-- Columna Izquierda: Información del Cliente y Cuentas -->
+    <section class="client-details-column">
+      
+      <div class="client-info-card">
+        <h3>{{ client.name }}</h3>
+        <div class="info-row">
+          <span>DNI:</span>
+          <span>{{ client.dni }}</span>
+        </div>
+        <div class="info-row">
+          <span>Tipo:</span>
+          <span>{{ client.get_client_type_display }}</span>
+        </div>
+      </div>
+
+      <div class="account-list">
+        {% for account in accounts %}
+          <div class="account-card">
+            <div class="account-info">
+              <span class="account-number">{{ account.account_number }}</span>
+              <span class="account-type">{{ account.get_account_type_display }}</span>
+            </div>
+            <div class="account-balance">
+              <span class="balance-amount">{{ account.balance|floatformat:2 }}</span>
+              <span class="balance-currency">{{ account.get_currency_display }}</span>
+            </div>
+          </div>
+        {% empty %}
+          <p>No tienes cuentas registradas.</p>
+        {% endfor %}
+      </div>
+    </section>
+
+    <!-- Columna Derecha: Formulario de Depósito -->
+    <section class="form-column">
+      <h2>Realizar un Depósito</h2>
+      <p>Selecciona la cuenta de destino e ingresa el monto a depositar.</p>
+      
+      <form class="deposit-form" method="POST" action="{% url 'portal:deposito' %}">
+        {% csrf_token %}
+        
+        <div class="form-group">
+          <label for="account">Cuenta de Destino:</label>
+          <select id="account" name="account_id" required>
+            <option value="">-- Seleccione una cuenta --</option>
+            {% for acc in accounts %}
+              <option value="{{ acc.id }}">
+                N° {{ acc.account_number }} ({{ acc.get_account_type_display }})
+              </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="amount">Monto a Depositar:</label>
+          <input type="number" id="amount" name="amount" step="0.01" min="1.00" placeholder="Ej: 50.00" required>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-primary">Confirmar Depósito</button>
+        </div>
+      </form>
+    </section>
+
+  </main>
+  <!-- ========= FIN DEL CONTENIDO ========= -->
+
+
+  <!-- Pie de página (Sin cambios) -->
+  <footer class="main-footer">
+    <p>© 2025 Banco Digital - Todos los derechos reservados</p>
+  </footer>
+
+</body>
+</html>

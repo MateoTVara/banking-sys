@@ -1,0 +1,112 @@
+/* static/css/portal/navbar.css */
+.top-navbar {
+  background-color: #2c3e50;
+  padding: 15px 20px;
+  position: fixed; /* Cambiado de sticky a fixed para estar en la parte superior */
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.nav-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.nav-links {
+  display: flex;
+  gap: 20px;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  color: #ecf0f1;
+  text-decoration: none;
+  font-size: 16px;
+  padding: 10px 15px;
+  border-radius: 5px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.nav-link:hover {
+  background-color: #3498db;
+  color: #fff;
+}
+
+.nav-link.active {
+  background-color: #3498db;
+  color: #fff;
+}
+
+.nav-icon {
+  margin-right: 8px;
+  font-size: 18px;
+}
+
+.nav-text {
+  font-weight: 500;
+}
+
+.burger {
+  display: none;
+  cursor: pointer;
+}
+
+.burger div {
+  width: 25px;
+  height: 3px;
+  background-color: #ecf0f1;
+  margin: 5px 0;
+  transition: all 0.3s ease;
+}
+
+.burger.toggle .line1 {
+  transform: rotate(-45deg) translate(-5px, 6px);
+}
+
+.burger.toggle .line2 {
+  opacity: 0;
+}
+
+.burger.toggle .line3 {
+  transform: rotate(45deg) translate(-5px, -6px);
+}
+
+/* Ajustar el contenido para evitar superposición con la barra fija */
+header, main {
+  margin-top: 80px; /* Aumentado a 80px para dar más espacio */
+}
+
+/* Responsividad */
+@media screen and (max-width: 768px) {
+  .nav-links {
+    display: none;
+    position: absolute;
+    top: 60px;
+    left: 0;
+    width: 100%;
+    background-color: #2c3e50;
+    flex-direction: column;
+    padding: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+
+  .nav-links.active {
+    display: flex;
+  }
+
+  .nav-link {
+    padding: 15px;
+    justify-content: center;
+  }
+
+  .burger {
+    display: block;
+  }
+}
