@@ -1,123 +1,261 @@
+{% extends "portal/dashboard.html" %}
+
 {% load static %}
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <link rel="stylesheet" href="{% static 'css/portal/navbar.css' %}?v=1.0">
-  <link rel="stylesheet" href="{% static 'css/portal/client_depo/forms.css' %}?v=1.1"> 
-  
-  <title>Depósitos - Portal Cliente</title>
-</head>
-<body>
-  
-  <header class="main-header">
-  </header>
 
-  <nav class="top-navbar">
-    <div class="nav-container">
-      <a href="{% url 'portal:dashboard' %}" class="nav-link">
-        <span class="nav-text">Inicio</span>
-      </a>
-      <a href="#" class="nav-link">
-        <span class="nav-text">Aperturar Cuenta</span>
-      </a>
-      <a href="{% url 'portal:deposito' %}" class="nav-link active">
-        <span class="nav-text">Depósitos</span>
-      </a>
-      <a href="{% url 'portal:retiro' %}" class="nav-link">
-        <span class="nav-text">Retiros</span>
-      </a>
-      <a href="#" class="nav-link">
-        <span class="nav-text">Transferencia</span>
-      </a>
-      <a href="#" class="nav-link">
-        <span class="nav-text">Historial</span>
-      </a>
-    </div>
-  </nav>
-  <div class="message-container">
-    {% if messages %}
-      <ul class="messages">
-        {% for message in messages %}
-          <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>
-            {{ message }}
-          </li>
-        {% endfor %}
-      </ul>
-    {% endif %} 
-  </div>
+{% block styles %}
+<link rel="stylesheet" href="{% static 'css/portal/client_depo/forms.css' %}?v=1.2">
+<style>
+    .portal-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        padding: 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
 
-  <main class="container-split">
+    .form-container {
+        background: white;
+        padding: 2rem;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
 
-    <section class="client-details-column">
-      
-      <div class="client-info-card">
-        <h3>{{ client.name }}</h3>
-        <div class="info-row">
-          <span>DNI:</span>
-          <span>{{ client.dni }}</span>
-        </div>
-        <div class="info-row">
-          <span>Tipo:</span>
-          <span>{{ client.get_client_type_display }}</span>
-        </div>
-      </div>
+    .info-container {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        margin-bottom: 1.5rem;
+    }
 
-      <div class="account-list">
-        {% for account in accounts %}
-          <div class="account-card">
-            <div class="account-info">
-              <span class="account-number">{{ account.account_number }}</span>
-              <span class="account-type">{{ account.get_account_type_display }}</span>
+    .client-info-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+        padding: 0.25rem 0;
+    }
+
+    .client-info-row .label {
+        color: #666;
+        font-weight: 500;
+    }
+
+    .client-info-row .value {
+        color: #333;
+        font-weight: 600;
+    }
+
+    .accounts-section {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .account-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem;
+        margin-bottom: 0.5rem;
+        background: #f8f9fa;
+        border-radius: 5px;
+        border-left: 4px solid #28a745;
+    }
+
+    .account-info {
+        flex: 1;
+    }
+
+    .account-number {
+        font-weight: 600;
+        color: #333;
+    }
+
+    .account-type {
+        color: #666;
+        font-size: 0.875rem;
+    }
+
+    .account-balance {
+        text-align: right;
+    }
+
+    .balance-amount {
+        font-weight: 600;
+        color: #28a745;
+        font-size: 1.1rem;
+    }
+
+    .balance-currency {
+        color: #666;
+        font-size: 0.875rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .form-group select,
+    .form-group input {
+        width: 100%;
+        padding: 0.75rem;
+        border: 2px solid #ddd;
+        border-radius: 5px;
+        font-size: 1rem;
+    }
+
+    .form-group select:focus,
+    .form-group input:focus {
+        border-color: #007bff;
+        outline: none;
+    }
+
+    .form-actions {
+        margin-top: 2rem;
+    }
+
+    .btn-primary {
+        background: #007bff;
+        color: white;
+        padding: 0.75rem 2rem;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        width: 100%;
+    }
+
+    .btn-primary:hover {
+        background: #0056b3;
+    }
+
+    .info-cards {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        margin-top: 1.5rem;
+    }
+
+    .info-card {
+        background: #f8f9fa;
+        padding: 1.5rem;
+        border-radius: 8px;
+        border-left: 4px solid #28a745;
+    }
+
+    .info-card h4 {
+        margin: 0 0 0.5rem 0;
+        color: #333;
+    }
+
+    .info-card ul {
+        margin: 0;
+        padding-left: 1.5rem;
+    }
+
+    .info-card li {
+        margin-bottom: 0.25rem;
+    }
+
+    @media (max-width: 768px) {
+        .portal-container {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock styles %}
+
+{% block header_title %}
+<h1>Depósitos</h1>
+{% endblock header_title %}
+
+{% block content %}
+<div class="portal-container">
+    <!-- Columna Izquierda: Información del Cliente y Cuentas -->
+    <div class="info-column">
+        <div class="info-container">
+            <h3>{{ client.name }}</h3>
+            <div class="client-info-row">
+                <span class="label">DNI:</span>
+                <span class="value">{{ client.dni }}</span>
             </div>
-            <div class="account-balance">
-              <span class="balance-amount">{{ account.balance|floatformat:2 }}</span>
-              <span class="balance-currency">{{ account.get_currency_display }}</span>
+            <div class="client-info-row">
+                <span class="label">Tipo:</span>
+                <span class="value">{{ client.get_client_type_display }}</span>
             </div>
-          </div>
-        {% empty %}
-          <p>No tienes cuentas registradas.</p>
-        {% endfor %}
-      </div>
-    </section>
+        </div>
 
-    <section class="form-column">
-      <h2>Realizar un Depósito</h2>
-      <p>Selecciona la cuenta de destino e ingresa el monto a depositar.</p>
-      
-      <form class="deposit-form" method="POST" action="{% url 'portal:deposito' %}">
-        {% csrf_token %}
-        
-        <div class="form-group">
-          <label for="account">Cuenta de Destino:</label>
-          <select id="account" name="account_id" required>
-            <option value="">-- Seleccione una cuenta --</option>
-            {% for acc in accounts %}
-              <option value="{{ acc.id }}">
-                N° {{ acc.account_number }} ({{ acc.get_account_type_display }})
-              </option>
+        <div class="accounts-section">
+            <h4>Mis Cuentas</h4>
+            {% for account in accounts %}
+            <div class="account-item">
+                <div class="account-info">
+                    <div class="account-number">{{ account.account_number }}</div>
+                    <div class="account-type">{{ account.get_account_type_display }}</div>
+                </div>
+                <div class="account-balance">
+                    <div class="balance-amount">{{ account.balance|floatformat:2 }}</div>
+                    <div class="balance-currency">{{ account.get_currency_display }}</div>
+                </div>
+            </div>
+            {% empty %}
+            <p>No tienes cuentas registradas.</p>
             {% endfor %}
-          </select>
         </div>
+    </div>
 
-        <div class="form-group">
-          <label for="amount">Monto a Depositar:</label>
-          <input type="number" id="amount" name="amount" step="0.01" min="1.00" placeholder="Ej: 50.00" required>
+    <!-- Columna Derecha: Formulario de Depósito -->
+    <div class="form-container">
+        <h2>Realizar un Depósito</h2>
+        <p>Selecciona la cuenta de destino e ingresa el monto a depositar.</p>
+
+        <form method="POST" action="{% url 'portal:deposito' %}">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label for="account">Cuenta de Destino:</label>
+                <select id="account" name="account_id" required>
+                    <option value="">-- Seleccione una cuenta --</option>
+                    {% for acc in accounts %}
+                    <option value="{{ acc.id }}">
+                        N° {{ acc.account_number }} ({{ acc.get_account_type_display }})
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="amount">Monto a Depositar:</label>
+                <input type="number" id="amount" name="amount" step="0.01" min="1.00" placeholder="Ej: 50.00" required>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-primary">Confirmar Depósito</button>
+            </div>
+        </form>
+
+        <div class="info-cards">
+            <div class="info-card">
+                <h4>💡 Información Importante</h4>
+                <ul>
+                    <li><strong>Cuentas de Ahorro:</strong> Permiten depósitos sin restricciones</li>
+                    <li><strong>Cuentas Corrientes:</strong> Permiten depósitos sin restricciones</li>
+                    <li><strong>Cuentas a Plazo:</strong> No permiten depósitos adicionales</li>
+                    <li><strong>Monto mínimo:</strong> S/ 1.00 o $ 1.00</li>
+                    <li><strong>Procesamiento:</strong> Los depósitos se reflejan inmediatamente</li>
+                </ul>
+            </div>
         </div>
-
-        <div class="form-actions">
-          <button type="submit" class="btn-primary">Confirmar Depósito</button>
-        </div>
-      </form>
-    </section>
-
-  </main>
-
-  <footer class="main-footer">
-    <p>© 2025 Banco Digital - Todos los derechos reservados</p>
-  </footer>
-
-</body>
-</html>
+    </div>
+</div>
+{% endblock content %}

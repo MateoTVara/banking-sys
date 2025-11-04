@@ -1,0 +1,307 @@
+{% extends "portal/dashboard.html" %}
+
+{% load static %}
+
+{% block styles %}
+<style>
+    .portal-container {
+        padding: 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .accounts-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .accounts-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 3rem;
+    }
+
+    .account-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        border-left: 4px solid #28a745;
+    }
+
+    .account-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #eee;
+    }
+
+    .account-header h3 {
+        margin: 0;
+        color: #333;
+    }
+
+    .account-status {
+        background: #28a745;
+        color: white;
+        padding: 0.25rem 0.75rem;
+        border-radius: 15px;
+        font-size: 0.875rem;
+        font-weight: 600;
+    }
+
+    .account-info {
+        margin-bottom: 1.5rem;
+    }
+
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+        padding: 0.25rem 0;
+    }
+
+    .info-row .label {
+        color: #666;
+        font-weight: 500;
+    }
+
+    .info-row .value {
+        color: #333;
+        font-weight: 600;
+    }
+
+    .info-row .balance {
+        color: #28a745;
+        font-size: 1.1rem;
+    }
+
+    .info-row .interest {
+        color: #007bff;
+    }
+
+    .account-actions {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+
+    .btn-danger {
+        background: #dc3545;
+        color: white;
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        text-decoration: none;
+        font-size: 0.875rem;
+    }
+
+    .btn-danger:hover {
+        background: #c82333;
+    }
+
+    .btn-warning {
+        background: #ffc107;
+        color: #212529;
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        text-decoration: none;
+        font-size: 0.875rem;
+    }
+
+    .btn-warning:hover {
+        background: #e0a800;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        margin-bottom: 2rem;
+    }
+
+    .empty-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+    }
+
+    .empty-state h3 {
+        color: #333;
+        margin-bottom: 0.5rem;
+    }
+
+    .empty-state p {
+        color: #666;
+        margin-bottom: 2rem;
+    }
+
+    .btn-primary {
+        background: #007bff;
+        color: white;
+        padding: 0.75rem 2rem;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .btn-primary:hover {
+        background: #0056b3;
+    }
+
+    .info-section {
+        background: white;
+        padding: 2rem;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .info-section h3 {
+        color: #333;
+        margin-bottom: 1.5rem;
+        text-align: center;
+    }
+
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .info-item {
+        text-align: center;
+        background: #f8f9fa;
+        padding: 1.5rem;
+        border-radius: 8px;
+    }
+
+    .info-item h4 {
+        color: #007bff;
+        margin-bottom: 0.5rem;
+    }
+
+    .info-item p {
+        color: #666;
+        line-height: 1.5;
+    }
+
+    @media (max-width: 768px) {
+        .accounts-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .account-actions {
+            flex-direction: column;
+        }
+
+        .info-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock styles %}
+
+{% block header_title %}
+<h1>Cuentas a Plazo</h1>
+{% endblock header_title %}
+
+{% block content %}
+<div class="portal-container">
+    <div class="accounts-header">
+        <h2>Mis Cuentas a Plazo</h2>
+        <p>Gestiona tus inversiones a plazo fijo</p>
+    </div>
+
+    {% if cuentas_plazo %}
+    <div class="accounts-grid">
+        {% for cuenta in cuentas_plazo %}
+        <div class="account-card">
+            <div class="account-header">
+                <h3>{{ cuenta.get_account_type_display }}</h3>
+                <span class="account-status active">Activa</span>
+            </div>
+
+            <div class="account-info">
+                <div class="info-row">
+                    <span class="label">Número de Cuenta:</span>
+                    <span class="value">{{ cuenta.account_number }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="label">Moneda:</span>
+                    <span class="value">{{ cuenta.get_currency_display }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="label">Saldo Actual:</span>
+                    <span class="value balance">{{ cuenta.balance }} {{ cuenta.currency }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="label">Plazo:</span>
+                    <span class="value">{{ cuenta.term_months }} meses</span>
+                </div>
+                <div class="info-row">
+                    <span class="label">Tasa de Interés:</span>
+                    <span class="value interest">{{ cuenta.monthly_interest }}% mensual</span>
+                </div>
+                <div class="info-row">
+                    <span class="label">Fecha de Apertura:</span>
+                    <span class="value">{{ cuenta.opened_at|date:"d/m/Y" }}</span>
+                </div>
+            </div>
+
+            <div class="account-actions">
+                <form method="post" action="{% url 'portal:cancelar_plazo' cuenta.id %}" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-danger"
+                            onclick="return confirm('¿Está seguro de que desea cancelar esta cuenta a plazo?')">
+                        Cancelar
+                    </button>
+                </form>
+
+                <form method="post" action="{% url 'portal:renovar_plazo' cuenta.id %}" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn-warning"
+                            onclick="return confirm('¿Está seguro de que desea renovar esta cuenta a plazo?')">
+                        Renovar
+                    </button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-icon">💼</div>
+        <h3>No tienes cuentas a plazo</h3>
+        <p>Actualmente no posees cuentas a plazo activas.</p>
+        <a href="{% url 'portal:dashboard' %}" class="btn-primary">Volver al Dashboard</a>
+    </div>
+    {% endif %}
+
+    <div class="info-section">
+        <h3>💡 Información sobre Cuentas a Plazo</h3>
+        <div class="info-grid">
+            <div class="info-item">
+                <h4>Cancelación</h4>
+                <p>Al cancelar, los fondos se transferirán a tu cuenta de ahorros junto con los intereses generados.</p>
+            </div>
+            <div class="info-item">
+                <h4>Renovación</h4>
+                <p>La renovación reinicia el plazo manteniendo el capital más los intereses generados.</p>
+            </div>
+            <div class="info-item">
+                <h4>Intereses</h4>
+                <p>Los intereses se calculan mensualmente sobre el capital invertido.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

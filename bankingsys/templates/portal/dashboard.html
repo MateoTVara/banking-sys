@@ -15,22 +15,25 @@
       
       <!-- Columna Izquierda: Links de Navegación -->
       <nav class="header-nav">
-        <a href="{% url 'portal:dashboard' %}" class="nav-link active">
-          <span class="nav-text">Inicio</span>
-        </a>
-        <a href="#" class="nav-link">
-          <span class="nav-text">Cuenta</span>
-        </a>
-        <a href="{% url 'portal:deposito' %}" class="nav-link">
-          <span class="nav-text">Depósitos</span>
-        </a>
-        <a href="{% url 'portal:retiro' %}" class="nav-link">
-          <span class="nav-text">Retiros</span>
-        </a>
-        <a href="#" class="nav-link">
-          <span class="nav-text">Transferencia</span>
-        </a>
-      </nav>
+  <a href="{% url 'portal:dashboard' %}" class="nav-link active">
+    <span class="nav-text">Inicio</span>
+  </a>
+  <a href="#" class="nav-link">
+    <span class="nav-text">Cuenta</span>
+  </a>
+  <a href="{% url 'portal:deposito' %}" class="nav-link">
+    <span class="nav-text">Depósitos</span>
+  </a>
+  <a href="{% url 'portal:retiro' %}" class="nav-link">
+    <span class="nav-text">Retiros</span>
+  </a>
+  <a href="{% url 'portal:transferencia' %}" class="nav-link">
+    <span class="nav-text">Transferencia</span>
+  </a>
+  <a href="{% url 'portal:cuentas_plazo' %}" class="nav-link">
+    <span class="nav-text">Cuentas a Plazo</span>
+  </a>
+</nav>
 
       <!-- Columna Central: Título -->
       <div class="header-title">
