@@ -1,10 +1,13 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-from ..models import Account
 from django.contrib.auth.decorators import login_required
-from decimal import Decimal 
-from django.db.models import F 
-from django.db import transaction 
+from django.db import transaction
+from django.db.models import F
+from django.utils import timezone
+from decimal import Decimal
+from ..models.account import Account
+from ..models.account_movement import AccountMovement
+from ..models.client import Client
 
 
 def portal_dashboard(request):
@@ -15,19 +18,19 @@ def portal_dashboard(request):
     if not request.user.groups.filter(name='clients').exists():
         messages.error(request, 'No tienes acceso a esta sección.')
         return redirect('bankingsys:index')
-    
+
     # Verificar que el usuario tiene un cliente asociado
     if not request.user.client:
         messages.error(request, 'Tu usuario no tiene un cliente asociado.')
         return redirect('login')
-    
+
     client = request.user.client
     # accounts = Account.objects.filter(client=client)
-    
+
     # Calcular totales por moneda
     # total_pen = sum(acc.balance for acc in accounts if acc.currency == Account.Currency.PEN)
     # total_usd = sum(acc.balance for acc in accounts if acc.currency == Account.Currency.USD)
-    
+
     context = {
         'client': client,
         # 'accounts': accounts,
@@ -35,13 +38,15 @@ def portal_dashboard(request):
         # 'total_usd': total_usd,
     }
     return render(request, 'portal/dashboard.html', context)
+
+
 @login_required
 def portal_deposito(request):
     """
     Vista para la página de depósitos del cliente.
     Maneja GET (mostrar) y POST (procesar depósito).
     """
-    
+
     # 1. Obtener el cliente (lo hacemos al inicio)
     try:
         client = request.user.client
@@ -66,7 +71,7 @@ def portal_deposito(request):
             except:
                 messages.error(request, 'El monto ingresado no es válido.')
                 return redirect('portal:deposito')
-            
+
             # Validación 3: Monto positivo
             if deposit_amount <= 0:
                 messages.error(request, 'El monto a depositar debe ser positivo.')
@@ -74,7 +79,7 @@ def portal_deposito(request):
 
             # --- Inicio de la Transacción ---
             with transaction.atomic():
-                
+
                 # Obtenemos la cuenta de forma segura
                 account_to_deposit = Account.objects.select_for_update().get(id=account_id, client=client)
 
@@ -86,7 +91,18 @@ def portal_deposito(request):
                 # Si es Ahorro o Corriente, procede con el depósito
                 account_to_deposit.balance = F('balance') + deposit_amount
                 account_to_deposit.save()
-            messages.success(request, f"¡Depósito de S/ {deposit_amount:.2f} realizado con éxito!")
+
+                # Registrar movimiento
+                AccountMovement.objects.create(
+                    account=account_to_deposit,
+                    movement_type=AccountMovement.DEPOSIT,
+                    amount=deposit_amount,
+                    currency=account_to_deposit.currency,
+                    description="Depósito en ventanilla"
+                )
+
+            messages.success(request,
+                             f"¡Depósito de {deposit_amount:.2f} {account_to_deposit.currency} realizado con éxito!")
             return redirect('portal:deposito')
 
         except Account.DoesNotExist:
@@ -94,19 +110,20 @@ def portal_deposito(request):
         except Exception as e:
             # Captura cualquier otro error
             messages.error(request, f'Ocurrió un error inesperado: {e}')
-        
+
         # Si algo falló, redirigimos de todas formas
         return redirect('portal:deposito')
 
     # 3. Lógica para cargar la página (GET)
     accounts = Account.objects.filter(client=client)
-    
+
     context = {
         'client': client,
         'accounts': accounts
     }
-    
+
     return render(request, 'portal/client_depo/deposito.html', context)
+
 
 @login_required
 def portal_retiro(request):
@@ -114,7 +131,7 @@ def portal_retiro(request):
     Vista para la página de retiros del cliente.
     Incluye lógica de negocio por tipo de cuenta.
     """
-    
+
     try:
         client = request.user.client
     except Exception as e:
@@ -141,7 +158,7 @@ def portal_retiro(request):
             # --- INICIO DE LA LÓGICA DE NEGOCIO ---
             with transaction.atomic():
                 account_to_withdraw = Account.objects.select_for_update().get(id=account_id, client=client)
-                
+
                 # REGLA 1: CUENTA A PLAZOS (No se puede retirar)
                 if account_to_withdraw.account_type == 'term':
                     messages.error(request, 'No se pueden realizar retiros de Cuentas a Plazos.')
@@ -152,7 +169,7 @@ def portal_retiro(request):
                     if withdrawal_amount > account_to_withdraw.balance:
                         messages.error(request, 'Fondos insuficientes. Las cuentas de Ahorro no pueden sobregirarse.')
                         raise Exception('Fondos insuficientes Ahorro')
-                
+
                 # REGLA 3: CUENTA CORRIENTE (Sí puede sobregirarse)
                 elif account_to_withdraw.account_type == 'current':
                     pass
@@ -165,18 +182,29 @@ def portal_retiro(request):
                 # Si pasó todas las reglas, se ejecuta la resta:
                 account_to_withdraw.balance = F('balance') - withdrawal_amount
                 account_to_withdraw.save()
-            
-            messages.success(request, f"¡Retiro de S/ {withdrawal_amount:.2f} realizado con éxito!")
+
+                # Registrar movimiento
+                AccountMovement.objects.create(
+                    account=account_to_withdraw,
+                    movement_type=AccountMovement.WITHDRAWAL,
+                    amount=-withdrawal_amount,
+                    currency=account_to_withdraw.currency,
+                    description="Retiro en ventanilla"
+                )
+
+            messages.success(request,
+                             f"¡Retiro de {withdrawal_amount:.2f} {account_to_withdraw.currency} realizado con éxito!")
             return redirect('portal:retiro')
 
         except Account.DoesNotExist:
             messages.error(request, 'La cuenta seleccionada no existe o no te pertenece.')
         except Exception as e:
-            if str(e) in ('Retiro de Plazos no permitido', 'Fondos insuficientes Ahorro', 'Fondos insuficientes Default'):
+            if str(e) in ('Retiro de Plazos no permitido', 'Fondos insuficientes Ahorro',
+                          'Fondos insuficientes Default'):
                 pass
             else:
                 messages.error(request, f'Ocurrió un error inesperado: {e}')
-        
+
         return redirect('portal:retiro')
 
     accounts = Account.objects.filter(client=client)
@@ -185,3 +213,266 @@ def portal_retiro(request):
         'accounts': accounts
     }
     return render(request, 'portal/client_depo/retiro.html', context)
+
+
+@login_required
+def portal_transferencia(request):
+    """
+    Vista para transferencias entre cuentas
+    """
+    # Verificar que el usuario tiene un cliente asociado
+    try:
+        cliente_actual = request.user.client
+    except Exception as e:
+        messages.error(request, 'Tu usuario no tiene un cliente asociado.')
+        return redirect('login')
+
+    if request.method == 'POST':
+        try:
+            cuenta_origen_id = request.POST.get('cuenta_origen')
+            cuenta_destino_numero = request.POST.get('cuenta_destino')
+            monto = request.POST.get('monto')
+            descripcion = request.POST.get('descripcion', '')
+
+            # Validaciones básicas
+            if not all([cuenta_origen_id, cuenta_destino_numero, monto]):
+                messages.error(request, 'Todos los campos son obligatorios')
+                return redirect('portal:transferencia')
+
+            monto = Decimal(monto)
+            if monto <= 0:
+                messages.error(request, 'El monto debe ser mayor a cero')
+                return redirect('portal:transferencia')
+
+            # Obtener cuentas
+            cuenta_origen = get_object_or_404(Account, id=cuenta_origen_id, status=Account.Status.ACTIVE)
+            cuenta_destino = get_object_or_404(Account, account_number=cuenta_destino_numero,
+                                               status=Account.Status.ACTIVE)
+
+            # Verificar que la cuenta origen pertenece al cliente
+            if cuenta_origen.client != cliente_actual:
+                messages.error(request, 'No tiene permisos para operar esta cuenta')
+                return redirect('portal:transferencia')
+
+            # Verificar que no sea cuenta a plazo
+            if cuenta_origen.account_type == Account.AccountType.TERM:
+                messages.error(request, 'No se pueden realizar transferencias desde cuentas a plazo')
+                return redirect('portal:transferencia')
+
+            # Verificar fondos
+            saldo_disponible = cuenta_origen.balance
+            if cuenta_origen.account_type == Account.AccountType.CURRENT:
+                saldo_disponible += cuenta_origen.overdraft_limit
+
+            if monto > saldo_disponible:
+                messages.error(request, 'Fondos insuficientes')
+                return redirect('portal:transferencia')
+
+            # Verificar misma moneda
+            if cuenta_origen.currency != cuenta_destino.currency:
+                messages.error(request, 'Las cuentas deben ser de la misma moneda')
+                return redirect('portal:transferencia')
+
+            # Realizar transferencia
+            with transaction.atomic():
+                # Debitar cuenta origen
+                cuenta_origen.balance -= monto
+                cuenta_origen.save()
+
+                # Acreditar cuenta destino
+                cuenta_destino.balance += monto
+                cuenta_destino.save()
+
+                # Registrar movimientos
+                AccountMovement.objects.create(
+                    account=cuenta_origen,
+                    movement_type=AccountMovement.TRANSFER,
+                    amount=-monto,
+                    currency=cuenta_origen.currency,
+                    description=f"Transferencia a {cuenta_destino.account_number} - {descripcion}",
+                    related_account=cuenta_destino
+                )
+
+                AccountMovement.objects.create(
+                    account=cuenta_destino,
+                    movement_type=AccountMovement.TRANSFER,
+                    amount=monto,
+                    currency=cuenta_destino.currency,
+                    description=f"Transferencia de {cuenta_origen.account_number} - {descripcion}",
+                    related_account=cuenta_origen
+                )
+
+            messages.success(request, f'Transferencia de {monto} {cuenta_origen.currency} realizada exitosamente')
+            return redirect('portal:dashboard')
+
+        except ValueError:
+            messages.error(request, 'Monto inválido')
+        except Exception as e:
+            messages.error(request, f'Error en la transferencia: {str(e)}')
+
+    # GET request - mostrar formulario
+    cuentas_propias = Account.objects.filter(
+        client=cliente_actual,
+        status=Account.Status.ACTIVE
+    ).exclude(account_type=Account.AccountType.TERM)  # Excluir cuentas a plazo
+
+    return render(request, 'portal/transferencia.html', {
+        'cuentas_propias': cuentas_propias,
+        'client': cliente_actual
+    })
+
+
+@login_required
+def portal_cuentas_plazo(request):
+    """
+    Vista para gestionar cuentas a plazo
+    """
+    # Verificar que el usuario tiene un cliente asociado
+    try:
+        cliente_actual = request.user.client
+    except Exception as e:
+        messages.error(request, 'Tu usuario no tiene un cliente asociado.')
+        return redirect('login')
+
+    cuentas_plazo = Account.objects.filter(
+        client=cliente_actual,
+        account_type=Account.AccountType.TERM,
+        status=Account.Status.ACTIVE
+    )
+
+    return render(request, 'portal/cuentas_plazo.html', {
+        'cuentas_plazo': cuentas_plazo,
+        'client': cliente_actual
+    })
+
+
+@login_required
+def cancelar_cuenta_plazo(request, account_id):
+    """
+    Cancelar cuenta a plazo y depositar fondos en cuenta de ahorros
+    """
+    # Verificar que el usuario tiene un cliente asociado
+    try:
+        cliente_actual = request.user.client
+    except Exception as e:
+        messages.error(request, 'Tu usuario no tiene un cliente asociado.')
+        return redirect('login')
+
+    try:
+        cuenta_plazo = get_object_or_404(
+            Account,
+            id=account_id,
+            client=cliente_actual,
+            account_type=Account.AccountType.TERM,
+            status=Account.Status.ACTIVE
+        )
+
+        with transaction.atomic():
+            # Calcular intereses si aplica
+            monto_final = cuenta_plazo.balance
+            if cuenta_plazo.monthly_interest:
+                # Cálculo simple de intereses (puedes ajustar según tu lógica)
+                meses_transcurridos = (timezone.now() - cuenta_plazo.opened_at).days // 30
+                if meses_transcurridos > 0:
+                    interes = cuenta_plazo.balance * (cuenta_plazo.monthly_interest / 100) * meses_transcurridos
+                    monto_final += interes
+
+            # Buscar cuenta de ahorros para depositar el monto
+            cuenta_ahorros = Account.objects.filter(
+                client=cliente_actual,
+                account_type=Account.AccountType.SAVINGS,
+                status=Account.Status.ACTIVE,
+                currency=cuenta_plazo.currency
+            ).first()
+
+            if not cuenta_ahorros:
+                messages.error(request, 'No tiene cuenta de ahorros activa para recibir los fondos')
+                return redirect('portal:cuentas_plazo')
+
+            # Depositar en cuenta de ahorros
+            cuenta_ahorros.balance += monto_final
+            cuenta_ahorros.save()
+
+            # Cerrar cuenta a plazo
+            cuenta_plazo.status = Account.Status.CLOSED
+            cuenta_plazo.closed_at = timezone.now()
+            cuenta_plazo.save()
+
+            # Registrar movimientos
+            AccountMovement.objects.create(
+                account=cuenta_plazo,
+                movement_type=AccountMovement.CANCELLATION,
+                amount=-cuenta_plazo.balance,
+                currency=cuenta_plazo.currency,
+                description="Cancelación de cuenta a plazo"
+            )
+
+            AccountMovement.objects.create(
+                account=cuenta_ahorros,
+                movement_type=AccountMovement.DEPOSIT,
+                amount=monto_final,
+                currency=cuenta_ahorros.currency,
+                description=f"Depósito por cancelación de cuenta a plazo {cuenta_plazo.account_number}",
+                related_account=cuenta_plazo
+            )
+
+        messages.success(request,
+                         f'Cuenta a plazo cancelada exitosamente. Se depositaron {monto_final} {cuenta_plazo.currency} en su cuenta de ahorros')
+        return redirect('portal:cuentas_plazo')
+
+    except Exception as e:
+        messages.error(request, f'Error al cancelar la cuenta a plazo: {str(e)}')
+        return redirect('portal:cuentas_plazo')
+
+
+@login_required
+def renovar_cuenta_plazo(request, account_id):
+    """
+    Renovar cuenta a plazo capitalizando intereses
+    """
+    # Verificar que el usuario tiene un cliente asociado
+    try:
+        cliente_actual = request.user.client
+    except Exception as e:
+        messages.error(request, 'Tu usuario no tiene un cliente asociado.')
+        return redirect('login')
+
+    try:
+        cuenta_plazo = get_object_or_404(
+            Account,
+            id=account_id,
+            client=cliente_actual,
+            account_type=Account.AccountType.TERM,
+            status=Account.Status.ACTIVE
+        )
+
+        with transaction.atomic():
+            # Calcular intereses y renovar
+            monto_renovado = cuenta_plazo.balance
+            if cuenta_plazo.monthly_interest:
+                meses_transcurridos = (timezone.now() - cuenta_plazo.opened_at).days // 30
+                if meses_transcurridos > 0:
+                    interes = cuenta_plazo.balance * (cuenta_plazo.monthly_interest / 100) * meses_transcurridos
+                    monto_renovado += interes
+
+            # Actualizar cuenta con nuevo monto y fecha
+            cuenta_plazo.balance = monto_renovado
+            cuenta_plazo.opened_at = timezone.now()
+            cuenta_plazo.save()
+
+            # Registrar movimiento de renovación
+            AccountMovement.objects.create(
+                account=cuenta_plazo,
+                movement_type=AccountMovement.RENEWAL,
+                amount=monto_renovado,
+                currency=cuenta_plazo.currency,
+                description="Renovación de cuenta a plazo"
+            )
+
+        messages.success(request,
+                         f'Cuenta a plazo renovada exitosamente. Nuevo balance: {monto_renovado} {cuenta_plazo.currency}')
+        return redirect('portal:cuentas_plazo')
+
+    except Exception as e:
+        messages.error(request, f'Error al renovar la cuenta a plazo: {str(e)}')
+        return redirect('portal:cuentas_plazo')
