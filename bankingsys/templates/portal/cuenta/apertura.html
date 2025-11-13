@@ -1,0 +1,286 @@
+{% extends 'portal/dashboard.html' %}
+{% load static %}
+
+{% block styles %}
+<style>
+  .apertura-container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .apertura-title {
+    text-align: center;
+    color: #2c3e50;
+    margin-bottom: 2rem;
+    font-size: 2rem;
+  }
+
+  .client-info {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 4px;
+    margin-bottom: 2rem;
+  }
+
+  .client-info h3 {
+    margin-top: 0;
+    color: #34495e;
+    font-size: 1.2rem;
+  }
+
+  .client-info p {
+    margin: 0.5rem 0;
+    color: #555;
+  }
+
+  .form-apertura {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .form-group label {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #2c3e50;
+  }
+
+  .form-group select,
+  .form-group input {
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+  }
+
+  .form-group select:focus,
+  .form-group input:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.1);
+  }
+
+  .plazo-fields {
+    display: none;
+    gap: 1rem;
+    padding: 1rem;
+    background-color: #e8f4f8;
+    border-radius: 4px;
+    border-left: 4px solid #3498db;
+  }
+
+  .plazo-fields.active {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .plazo-fields .form-group {
+    margin: 0;
+  }
+
+  .info-message {
+    padding: 1rem;
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+    border-radius: 4px;
+    color: #155724;
+    margin-bottom: 1rem;
+  }
+
+  .info-message.warning {
+    background-color: #fff3cd;
+    border-color: #ffeaa7;
+    color: #856404;
+  }
+
+  .btn-submit {
+    padding: 1rem;
+    background-color: #27ae60;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+
+  .btn-submit:hover {
+    background-color: #229954;
+  }
+
+  .btn-submit:active {
+    transform: scale(0.98);
+  }
+
+  .account-type-info {
+    font-size: 0.9rem;
+    color: #666;
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+  }
+</style>
+{% endblock styles %}
+
+{% block header_title %}
+  <h1>Apertura de Cuenta</h1>
+{% endblock header_title %}
+
+{% block content %}
+<div class="apertura-container">
+  <h2 class="apertura-title">Solicitud de Apertura de Cuenta</h2>
+  
+  <div class="client-info">
+    <h3>Información del Cliente</h3>
+    <p><strong>Código:</strong> {{ client.code }}</p>
+    <p><strong>Nombre:</strong> {{ client.name }}</p>
+    <p><strong>Tipo:</strong> {{ client.get_client_type_display }}</p>
+  </div>
+
+  <div class="info-message">
+    <strong>Información importante:</strong>
+    <ul style="margin: 0.5rem 0 0 1.5rem;">
+      <li>Las cuentas de ahorro y corriente pueden abrirse con saldo cero.</li>
+      <li>Las cuentas a plazo requieren un monto inicial, plazo de permanencia e interés mensual.</li>
+      <li>La apertura es únicamente a nombre del titular.</li>
+    </ul>
+  </div>
+
+  <form class="form-apertura" method="post" id="aperturaForm">
+    {% csrf_token %}
+    
+    <div class="form-group">
+      <label for="account_type">Tipo de Cuenta *</label>
+      <select name="account_type" id="account_type" required>
+        <option value="">-- Seleccione tipo de cuenta --</option>
+        {% for value, label in account_types %}
+          <option value="{{ value }}">{{ label }}</option>
+        {% endfor %}
+      </select>
+      <div class="account-type-info" id="accountTypeInfo"></div>
+    </div>
+
+    <div class="form-group">
+      <label for="currency">Moneda *</label>
+      <select name="currency" id="currency" required>
+        <option value="">-- Seleccione moneda --</option>
+        {% for value, label in currencies %}
+          <option value="{{ value }}">{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="initial_amount">Monto Inicial</label>
+      <input 
+        type="number" 
+        name="initial_amount" 
+        id="initial_amount" 
+        min="0" 
+        step="0.01" 
+        value="0"
+        placeholder="0.00"
+      >
+      <small style="color: #666; margin-top: 0.25rem;">
+        Para cuentas de ahorro y corriente puede ser cero. Para cuentas a plazo es obligatorio.
+      </small>
+    </div>
+
+    <div class="plazo-fields" id="plazoFields">
+      <div class="info-message warning">
+        <strong>Campos adicionales para Cuenta a Plazo</strong>
+      </div>
+      
+      <div class="form-group">
+        <label for="term_months">Plazo de Permanencia (meses) *</label>
+        <input 
+          type="number" 
+          name="term_months" 
+          id="term_months" 
+          min="1" 
+          step="1"
+          placeholder="Ejemplo: 12, 24, 36"
+        >
+      </div>
+
+      <div class="form-group">
+        <label for="monthly_interest">Interés Mensual (%) *</label>
+        <input 
+          type="number" 
+          name="monthly_interest" 
+          id="monthly_interest" 
+          min="0" 
+          step="0.01"
+          placeholder="Ejemplo: 1.5"
+        >
+      </div>
+    </div>
+
+    <button type="submit" class="btn-submit">Abrir Cuenta</button>
+  </form>
+</div>
+
+<script>
+  const accountTypeSelect = document.getElementById('account_type');
+  const plazoFields = document.getElementById('plazoFields');
+  const initialAmountInput = document.getElementById('initial_amount');
+  const accountTypeInfo = document.getElementById('accountTypeInfo');
+  
+  const accountTypeDescriptions = {
+    'savings': 'Cuenta de Ahorros: Ideal para guardar dinero con seguridad. Puede abrirse con saldo cero.',
+    'current': 'Cuenta Corriente: Permite realizar múltiples transacciones. Puede abrirse con saldo cero.',
+    'term': 'Cuenta a Plazo: Inversión con intereses. Requiere monto inicial, plazo e interés mensual.'
+  };
+
+  accountTypeSelect.addEventListener('change', function() {
+    const selectedType = this.value;
+    
+    // Mostrar información del tipo de cuenta
+    if (selectedType && accountTypeDescriptions[selectedType]) {
+      accountTypeInfo.textContent = accountTypeDescriptions[selectedType];
+      accountTypeInfo.style.display = 'block';
+    } else {
+      accountTypeInfo.style.display = 'none';
+    }
+    
+    // Mostrar/ocultar campos de plazo
+    if (selectedType === 'term') {
+      plazoFields.classList.add('active');
+      // Hacer obligatorio el monto para cuentas a plazo
+      initialAmountInput.required = true;
+      initialAmountInput.min = '0.01';
+      document.getElementById('term_months').required = true;
+      document.getElementById('monthly_interest').required = true;
+    } else {
+      plazoFields.classList.remove('active');
+      initialAmountInput.required = false;
+      initialAmountInput.min = '0';
+      document.getElementById('term_months').required = false;
+      document.getElementById('monthly_interest').required = false;
+    }
+  });
+
+  // Validación del formulario
+  document.getElementById('aperturaForm').addEventListener('submit', function(e) {
+    const accountType = accountTypeSelect.value;
+    const initialAmount = parseFloat(initialAmountInput.value) || 0;
+    
+    if (accountType === 'term' && initialAmount <= 0) {
+      e.preventDefault();
+      alert('Las cuentas a plazo deben tener un monto inicial mayor a cero.');
+      return false;
+    }
+  });
+</script>
+{% endblock content %}

@@ -476,3 +476,235 @@ def renovar_cuenta_plazo(request, account_id):
     except Exception as e:
         messages.error(request, f'Error al renovar la cuenta a plazo: {str(e)}')
         return redirect('portal:cuentas_plazo')
+
+
+@login_required
+def apertura_cuenta(request):
+    """
+    Vista para la apertura de cuentas (Ahorros, Corriente, Plazo Fijo).
+    Los clientes pueden abrir cuentas únicamente a su nombre.
+    
+    Reglas de negocio:
+    - Cuentas de ahorro y corriente: pueden abrirse con saldo cero, en soles o dólares
+    - Cuentas a plazo: requieren monto inicial, plazo de permanencia e interés mensual
+    """
+    try:
+        client = request.user.client
+    except Exception as e:
+        messages.error(request, 'Tu usuario no tiene un cliente asociado.')
+        return redirect('login')
+
+    if request.method == 'POST':
+        try:
+            account_type = request.POST.get('account_type')
+            currency = request.POST.get('currency')
+            initial_amount_str = request.POST.get('initial_amount', '0')
+            
+            # Validaciones básicas
+            if not account_type or not currency:
+                messages.error(request, 'Debe seleccionar el tipo de cuenta y la moneda.')
+                return redirect('portal:apertura_cuenta')
+            
+            # Validar tipo de cuenta
+            if account_type not in [Account.AccountType.SAVINGS, Account.AccountType.CURRENT, Account.AccountType.TERM]:
+                messages.error(request, 'Tipo de cuenta inválido.')
+                return redirect('portal:apertura_cuenta')
+            
+            # Validar moneda
+            if currency not in [Account.Currency.PEN, Account.Currency.USD]:
+                messages.error(request, 'Moneda inválida.')
+                return redirect('portal:apertura_cuenta')
+            
+            # Validar monto inicial
+            try:
+                initial_amount = Decimal(initial_amount_str) if initial_amount_str else Decimal('0')
+            except:
+                messages.error(request, 'El monto inicial no es válido.')
+                return redirect('portal:apertura_cuenta')
+            
+            if initial_amount < 0:
+                messages.error(request, 'El monto inicial no puede ser negativo.')
+                return redirect('portal:apertura_cuenta')
+            
+            with transaction.atomic():
+                # Crear la nueva cuenta
+                nueva_cuenta = Account(
+                    client=client,
+                    account_type=account_type,
+                    currency=currency,
+                    balance=initial_amount,
+                    status=Account.Status.ACTIVE
+                )
+                
+                # Para cuentas a plazo, validar campos adicionales
+                if account_type == Account.AccountType.TERM:
+                    term_months_str = request.POST.get('term_months')
+                    monthly_interest_str = request.POST.get('monthly_interest')
+                    
+                    # Validar que se ingresaron los campos requeridos
+                    if not term_months_str or not monthly_interest_str:
+                        messages.error(request, 'Para cuentas a plazo debe especificar el plazo en meses y el interés mensual.')
+                        return redirect('portal:apertura_cuenta')
+                    
+                    # Validar que el monto inicial no sea cero
+                    if initial_amount <= 0:
+                        messages.error(request, 'Las cuentas a plazo deben abrirse con un monto inicial mayor a cero.')
+                        return redirect('portal:apertura_cuenta')
+                    
+                    try:
+                        term_months = int(term_months_str)
+                        monthly_interest = Decimal(monthly_interest_str)
+                    except:
+                        messages.error(request, 'El plazo en meses o el interés mensual no son válidos.')
+                        return redirect('portal:apertura_cuenta')
+                    
+                    if term_months <= 0:
+                        messages.error(request, 'El plazo en meses debe ser mayor a cero.')
+                        return redirect('portal:apertura_cuenta')
+                    
+                    if monthly_interest < 0:
+                        messages.error(request, 'El interés mensual no puede ser negativo.')
+                        return redirect('portal:apertura_cuenta')
+                    
+                    nueva_cuenta.term_months = term_months
+                    nueva_cuenta.monthly_interest = monthly_interest
+                
+                # Guardar la cuenta
+                nueva_cuenta.save()
+                
+                # Registrar movimiento inicial si hay monto
+                if initial_amount > 0:
+                    AccountMovement.objects.create(
+                        account=nueva_cuenta,
+                        movement_type=AccountMovement.DEPOSIT,
+                        amount=initial_amount,
+                        currency=currency,
+                        description="Depósito inicial por apertura de cuenta"
+                    )
+                
+                # Mensaje de éxito según el tipo de cuenta
+                account_type_label = dict(Account.AccountType.choices)[account_type]
+                messages.success(
+                    request,
+                    f'¡Cuenta de {account_type_label} abierta exitosamente! Número de cuenta: {nueva_cuenta.account_number}'
+                )
+                return redirect('portal:apertura_cuenta')
+        
+        except Exception as e:
+            messages.error(request, f'Ocurrió un error al abrir la cuenta: {str(e)}')
+            return redirect('portal:apertura_cuenta')
+    
+    # GET request - mostrar formulario
+    context = {
+        'client': client,
+        'account_types': Account.AccountType.choices,
+        'currencies': Account.Currency.choices,
+    }
+    return render(request, 'portal/cuenta/apertura.html', context)
+
+
+@login_required
+def cierre_cuenta(request):
+    """
+    Vista para el cierre de cuentas del cliente.
+    
+    Regla de negocio:
+    - Solo se pueden cerrar cuentas con saldo cero
+    """
+    try:
+        client = request.user.client
+    except Exception as e:
+        messages.error(request, 'Tu usuario no tiene un cliente asociado.')
+        return redirect('login')
+    
+    if request.method == 'POST':
+        try:
+            account_id = request.POST.get('account_id')
+            
+            if not account_id:
+                messages.error(request, 'Debe seleccionar una cuenta.')
+                return redirect('portal:cierre_cuenta')
+            
+            with transaction.atomic():
+                # Obtener la cuenta del cliente
+                cuenta = Account.objects.select_for_update().get(
+                    id=account_id,
+                    client=client,
+                    status=Account.Status.ACTIVE
+                )
+                
+                # Validar que el saldo sea cero
+                if cuenta.balance != 0:
+                    messages.error(
+                        request,
+                        f'No se puede cerrar la cuenta {cuenta.account_number}. '
+                        f'La cuenta debe tener saldo cero. Saldo actual: {cuenta.balance} {cuenta.currency}'
+                    )
+                    return redirect('portal:cierre_cuenta')
+                
+                # Cambiar el estado de la cuenta a CLOSED
+                cuenta.status = Account.Status.CLOSED
+                cuenta.save()
+                
+                # Registrar movimiento de cierre
+                AccountMovement.objects.create(
+                    account=cuenta,
+                    movement_type=AccountMovement.CLOSURE,
+                    amount=Decimal('0'),
+                    currency=cuenta.currency,
+                    description="Cierre de cuenta"
+                )
+                
+                account_type_label = dict(Account.AccountType.choices)[cuenta.account_type]
+                messages.success(
+                    request,
+                    f'La cuenta {cuenta.account_number} ({account_type_label}) ha sido cerrada exitosamente.'
+                )
+                return redirect('portal:cierre_cuenta')
+        
+        except Account.DoesNotExist:
+            messages.error(request, 'La cuenta seleccionada no existe, no te pertenece o ya está cerrada.')
+            return redirect('portal:cierre_cuenta')
+        except Exception as e:
+            messages.error(request, f'Ocurrió un error al cerrar la cuenta: {str(e)}')
+            return redirect('portal:cierre_cuenta')
+    
+    # GET request - mostrar lista de cuentas activas
+    cuentas_activas = Account.objects.filter(
+        client=client,
+        status=Account.Status.ACTIVE
+    ).order_by('-opened_at')
+    
+    context = {
+        'client': client,
+        'cuentas': cuentas_activas,
+    }
+    return render(request, 'portal/cuenta/cierre.html', context)
+
+
+@login_required
+def mis_cuentas(request):
+    """
+    Vista para mostrar todas las cuentas del cliente (activas e inactivas).
+    """
+    try:
+        client = request.user.client
+    except Exception as e:
+        messages.error(request, 'Tu usuario no tiene un cliente asociado.')
+        return redirect('login')
+    
+    # Obtener todas las cuentas del cliente
+    cuentas = Account.objects.filter(client=client).order_by('-opened_at')
+    
+    # Calcular totales por moneda (solo cuentas activas)
+    cuentas_activas = cuentas.filter(status=Account.Status.ACTIVE)
+    total_pen = sum(acc.balance for acc in cuentas_activas if acc.currency == Account.Currency.PEN)
+    total_usd = sum(acc.balance for acc in cuentas_activas if acc.currency == Account.Currency.USD)
+    
+    context = {
+        'client': client,
+        'cuentas': cuentas,
+        'total_pen': total_pen,
+        'total_usd': total_usd,
+    }
+    return render(request, 'portal/cuenta/mis_cuentas.html', context)

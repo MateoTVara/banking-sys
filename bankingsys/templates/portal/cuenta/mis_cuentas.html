@@ -1,0 +1,351 @@
+{% extends 'portal/dashboard.html' %}
+{% load static %}
+
+{% block styles %}
+<style>
+  .mis-cuentas-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 2rem;
+  }
+
+  .page-title {
+    text-align: center;
+    color: #2c3e50;
+    margin-bottom: 2rem;
+    font-size: 2rem;
+  }
+
+  .client-info {
+    background-color: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 2rem;
+  }
+
+  .client-info h3 {
+    margin-top: 0;
+    color: #34495e;
+    font-size: 1.2rem;
+  }
+
+  .client-info p {
+    margin: 0.5rem 0;
+    color: #555;
+  }
+
+  .totales {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .total-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .total-card.usd {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  }
+
+  .total-card h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1rem;
+    opacity: 0.9;
+  }
+
+  .total-card .amount {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .cuentas-section {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #ecf0f1;
+  }
+
+  .section-title {
+    font-size: 1.5rem;
+    color: #2c3e50;
+    margin: 0;
+  }
+
+  .cuenta-card {
+    background-color: #f8f9fa;
+    border: 2px solid #dee2e6;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    transition: all 0.3s;
+  }
+
+  .cuenta-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+  }
+
+  .cuenta-card.activa {
+    border-left: 4px solid #27ae60;
+  }
+
+  .cuenta-card.cerrada {
+    border-left: 4px solid #e74c3c;
+    opacity: 0.7;
+  }
+
+  .cuenta-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  .cuenta-number {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #2c3e50;
+  }
+
+  .cuenta-badges {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+
+  .badge-type {
+    background-color: #3498db;
+    color: white;
+  }
+
+  .badge-status {
+    background-color: #27ae60;
+    color: white;
+  }
+
+  .badge-status.cerrada {
+    background-color: #e74c3c;
+  }
+
+  .cuenta-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+
+  .cuenta-detail {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .cuenta-detail-label {
+    font-size: 0.85rem;
+    color: #7f8c8d;
+    margin-bottom: 0.25rem;
+  }
+
+  .cuenta-detail-value {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #2c3e50;
+  }
+
+  .balance {
+    font-size: 1.3rem;
+    color: #27ae60;
+  }
+
+  .plazo-info {
+    background-color: #e8f4f8;
+    padding: 0.75rem;
+    border-radius: 4px;
+    margin-top: 1rem;
+    border-left: 3px solid #3498db;
+  }
+
+  .plazo-info p {
+    margin: 0.25rem 0;
+    font-size: 0.9rem;
+    color: #2c3e50;
+  }
+
+  .no-cuentas {
+    text-align: center;
+    padding: 3rem;
+    color: #7f8c8d;
+  }
+
+  .no-cuentas i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+  }
+
+  .actions {
+    margin-top: 2rem;
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+  }
+
+  .btn {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.3s;
+  }
+
+  .btn-primary {
+    background-color: #3498db;
+    color: white;
+  }
+
+  .btn-primary:hover {
+    background-color: #2980b9;
+  }
+
+  .btn-success {
+    background-color: #27ae60;
+    color: white;
+  }
+
+  .btn-success:hover {
+    background-color: #229954;
+  }
+</style>
+{% endblock styles %}
+
+{% block header_title %}
+  <h1>Mis Cuentas</h1>
+{% endblock header_title %}
+
+{% block content %}
+<div class="mis-cuentas-container">
+  <h2 class="page-title">Mis Cuentas Bancarias</h2>
+  
+  <div class="client-info">
+    <h3>Información del Cliente</h3>
+    <p><strong>Código:</strong> {{ client.code }}</p>
+    <p><strong>Nombre:</strong> {{ client.name }}</p>
+    <p><strong>Email:</strong> {{ client.email }}</p>
+  </div>
+
+  <div class="totales">
+    <div class="total-card">
+      <h3>Total en Soles (PEN)</h3>
+      <p class="amount">S/ {{ total_pen|floatformat:2 }}</p>
+    </div>
+    <div class="total-card usd">
+      <h3>Total en Dólares (USD)</h3>
+      <p class="amount">$ {{ total_usd|floatformat:2 }}</p>
+    </div>
+  </div>
+
+  <div class="cuentas-section">
+    <div class="section-header">
+      <h3 class="section-title">Listado de Cuentas</h3>
+      <span style="color: #7f8c8d;">Total: {{ cuentas|length }} cuenta{{ cuentas|length|pluralize }}</span>
+    </div>
+
+    {% if cuentas %}
+      {% for cuenta in cuentas %}
+        <div class="cuenta-card {% if cuenta.status == 'active' %}activa{% else %}cerrada{% endif %}">
+          <div class="cuenta-header">
+            <span class="cuenta-number">{{ cuenta.account_number }}</span>
+            <div class="cuenta-badges">
+              <span class="badge badge-type">{{ cuenta.get_account_type_display }}</span>
+              <span class="badge badge-status {% if cuenta.status != 'active' %}cerrada{% endif %}">
+                {{ cuenta.get_status_display }}
+              </span>
+            </div>
+          </div>
+
+          <div class="cuenta-details">
+            <div class="cuenta-detail">
+              <span class="cuenta-detail-label">Moneda</span>
+              <span class="cuenta-detail-value">{{ cuenta.get_currency_display }}</span>
+            </div>
+            
+            <div class="cuenta-detail">
+              <span class="cuenta-detail-label">Saldo</span>
+              <span class="cuenta-detail-value balance">
+                {{ cuenta.currency }} {{ cuenta.balance|floatformat:2 }}
+              </span>
+            </div>
+            
+            <div class="cuenta-detail">
+              <span class="cuenta-detail-label">Fecha de Apertura</span>
+              <span class="cuenta-detail-value">{{ cuenta.opened_at|date:"d/m/Y H:i" }}</span>
+            </div>
+            
+            {% if cuenta.status == 'closed' and cuenta.closed_at %}
+            <div class="cuenta-detail">
+              <span class="cuenta-detail-label">Fecha de Cierre</span>
+              <span class="cuenta-detail-value">{{ cuenta.closed_at|date:"d/m/Y H:i" }}</span>
+            </div>
+            {% endif %}
+          </div>
+
+          {% if cuenta.account_type == 'term' %}
+            <div class="plazo-info">
+              <p><strong>📅 Información de Cuenta a Plazo:</strong></p>
+              <p><strong>Plazo:</strong> {{ cuenta.term_months }} meses</p>
+              <p><strong>Interés Mensual:</strong> {{ cuenta.monthly_interest }}%</p>
+              {% if cuenta.status == 'active' %}
+                <p><strong>Vencimiento:</strong> 
+                  {% widthratio cuenta.term_months 1 30 as days %}
+                  {{ cuenta.opened_at|date:"d/m/Y" }} + {{ days }} días
+                </p>
+              {% endif %}
+            </div>
+          {% endif %}
+        </div>
+      {% endfor %}
+    {% else %}
+      <div class="no-cuentas">
+        <div style="font-size: 3rem; margin-bottom: 1rem;">📁</div>
+        <h3>No tienes cuentas registradas</h3>
+        <p>Aún no has abierto ninguna cuenta. ¡Comienza abriendo tu primera cuenta!</p>
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="actions">
+    <a href="{% url 'portal:apertura_cuenta' %}" class="btn btn-success">
+      ➕ Abrir Nueva Cuenta
+    </a>
+    <a href="{% url 'portal:dashboard' %}" class="btn btn-primary">
+      🏠 Volver al Dashboard
+    </a>
+  </div>
+</div>
+{% endblock content %}

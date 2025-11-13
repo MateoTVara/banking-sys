@@ -18,8 +18,14 @@
   <a href="{% url 'portal:dashboard' %}" class="nav-link active">
     <span class="nav-text">Inicio</span>
   </a>
-  <a href="#" class="nav-link">
-    <span class="nav-text">Cuenta</span>
+  <a href="{% url 'portal:mis_cuentas' %}" class="nav-link">
+    <span class="nav-text">Mis Cuentas</span>
+  </a>
+  <a href="{% url 'portal:apertura_cuenta' %}" class="nav-link">
+    <span class="nav-text">Abrir Cuenta</span>
+  </a>
+  <a href="{% url 'portal:cierre_cuenta' %}" class="nav-link">
+    <span class="nav-text">Cerrar Cuenta</span>
   </a>
   <a href="{% url 'portal:deposito' %}" class="nav-link">
     <span class="nav-text">Depósitos</span>

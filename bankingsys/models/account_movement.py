@@ -8,12 +8,14 @@ class AccountMovement(models.Model):
     TRANSFER = 'transfer'
     RENEWAL = 'renewal'
     CANCELLATION = 'cancellation'
+    CLOSURE = 'closure'
     MOVEMENT_TYPE_CHOICES = [
         (DEPOSIT, 'Depósito'),
         (WITHDRAWAL, 'Retiro'),
         (TRANSFER, 'Transferencia'),
         (RENEWAL, 'Renovación'),
         (CANCELLATION, 'Cancelación'),
+        (CLOSURE, 'Cierre'),
     ]
     account = models.ForeignKey(Account, on_delete=models.CASCADE)
     movement_type = models.CharField(max_length=15, choices=MOVEMENT_TYPE_CHOICES)

@@ -1,0 +1,366 @@
+{% extends 'portal/dashboard.html' %}
+{% load static %}
+
+{% block styles %}
+<style>
+  .cierre-container {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .cierre-title {
+    text-align: center;
+    color: #2c3e50;
+    margin-bottom: 2rem;
+    font-size: 2rem;
+  }
+
+  .client-info {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 4px;
+    margin-bottom: 2rem;
+  }
+
+  .client-info h3 {
+    margin-top: 0;
+    color: #34495e;
+    font-size: 1.2rem;
+  }
+
+  .client-info p {
+    margin: 0.5rem 0;
+    color: #555;
+  }
+
+  .warning-message {
+    padding: 1rem;
+    background-color: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: 4px;
+    color: #856404;
+    margin-bottom: 2rem;
+  }
+
+  .warning-message strong {
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+
+  .cuentas-list {
+    margin-top: 2rem;
+  }
+
+  .cuenta-card {
+    background-color: #f8f9fa;
+    border: 2px solid #dee2e6;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    transition: all 0.3s;
+  }
+
+  .cuenta-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .cuenta-card.selectable {
+    cursor: pointer;
+  }
+
+  .cuenta-card.selectable:hover {
+    border-color: #e74c3c;
+    background-color: #fff5f5;
+  }
+
+  .cuenta-card.selected {
+    border-color: #e74c3c;
+    background-color: #ffe6e6;
+  }
+
+  .cuenta-card.disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .cuenta-card.disabled:hover {
+    border-color: #dee2e6;
+    background-color: #f8f9fa;
+  }
+
+  .cuenta-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  .cuenta-number {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #2c3e50;
+  }
+
+  .cuenta-type {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    background-color: #3498db;
+    color: white;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+
+  .cuenta-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+
+  .cuenta-detail {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .cuenta-detail-label {
+    font-size: 0.85rem;
+    color: #7f8c8d;
+    margin-bottom: 0.25rem;
+  }
+
+  .cuenta-detail-value {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #2c3e50;
+  }
+
+  .balance-zero {
+    color: #27ae60;
+  }
+
+  .balance-positive {
+    color: #e74c3c;
+  }
+
+  .no-cuentas {
+    text-align: center;
+    padding: 3rem;
+    color: #7f8c8d;
+  }
+
+  .no-cuentas i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+  }
+
+  .form-cierre {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 2px solid #dee2e6;
+  }
+
+  .btn-cerrar {
+    width: 100%;
+    padding: 1rem;
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+
+  .btn-cerrar:hover {
+    background-color: #c0392b;
+  }
+
+  .btn-cerrar:disabled {
+    background-color: #95a5a6;
+    cursor: not-allowed;
+  }
+
+  .btn-cerrar:active {
+    transform: scale(0.98);
+  }
+
+  .cierre-info {
+    background-color: #e8f4f8;
+    border-left: 4px solid #3498db;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 4px;
+  }
+
+  .cierre-info p {
+    margin: 0.5rem 0;
+    color: #2c3e50;
+  }
+
+  input[type="radio"] {
+    display: none;
+  }
+</style>
+{% endblock styles %}
+
+{% block header_title %}
+  <h1>Cierre de Cuenta</h1>
+{% endblock header_title %}
+
+{% block content %}
+<div class="cierre-container">
+  <h2 class="cierre-title">Solicitud de Cierre de Cuenta</h2>
+  
+  <div class="client-info">
+    <h3>Información del Cliente</h3>
+    <p><strong>Código:</strong> {{ client.code }}</p>
+    <p><strong>Nombre:</strong> {{ client.name }}</p>
+    <p><strong>Tipo:</strong> {{ client.get_client_type_display }}</p>
+  </div>
+
+  <div class="warning-message">
+    <strong>⚠️ Importante:</strong>
+    Solo se pueden cerrar cuentas con saldo cero. Si su cuenta tiene saldo, debe realizar retiros o transferencias antes de proceder con el cierre.
+  </div>
+
+  {% if cuentas %}
+    <div class="cuentas-list">
+      <h3 style="color: #2c3e50; margin-bottom: 1rem;">Seleccione la cuenta que desea cerrar:</h3>
+      
+      <form method="post" id="cierreForm" class="form-cierre">
+        {% csrf_token %}
+        
+        {% for cuenta in cuentas %}
+          <div class="cuenta-card {% if cuenta.balance == 0 %}selectable{% else %}disabled{% endif %}" 
+               data-account-id="{{ cuenta.id }}"
+               data-balance="{{ cuenta.balance }}">
+            
+            <div class="cuenta-header">
+              <span class="cuenta-number">{{ cuenta.account_number }}</span>
+              <span class="cuenta-type">{{ cuenta.get_account_type_display }}</span>
+            </div>
+
+            <div class="cuenta-details">
+              <div class="cuenta-detail">
+                <span class="cuenta-detail-label">Moneda</span>
+                <span class="cuenta-detail-value">{{ cuenta.get_currency_display }}</span>
+              </div>
+              
+              <div class="cuenta-detail">
+                <span class="cuenta-detail-label">Saldo</span>
+                <span class="cuenta-detail-value {% if cuenta.balance == 0 %}balance-zero{% else %}balance-positive{% endif %}">
+                  {{ cuenta.currency }} {{ cuenta.balance|floatformat:2 }}
+                </span>
+              </div>
+              
+              <div class="cuenta-detail">
+                <span class="cuenta-detail-label">Fecha de Apertura</span>
+                <span class="cuenta-detail-value">{{ cuenta.opened_at|date:"d/m/Y" }}</span>
+              </div>
+              
+              <div class="cuenta-detail">
+                <span class="cuenta-detail-label">Estado</span>
+                <span class="cuenta-detail-value">
+                  {% if cuenta.balance == 0 %}
+                    ✅ Disponible para cierre
+                  {% else %}
+                    ❌ Saldo pendiente
+                  {% endif %}
+                </span>
+              </div>
+            </div>
+            
+            {% if cuenta.balance == 0 %}
+              <input type="radio" name="account_id" value="{{ cuenta.id }}" id="cuenta_{{ cuenta.id }}">
+            {% endif %}
+          </div>
+        {% endfor %}
+
+        <div class="cierre-info" id="selectedInfo" style="display: none;">
+          <p><strong>Cuenta seleccionada:</strong> <span id="selectedAccountNumber"></span></p>
+          <p>Al confirmar, esta cuenta será cerrada permanentemente y no podrá ser reactivada.</p>
+        </div>
+
+        <button type="submit" class="btn-cerrar" id="btnCerrar" disabled>
+          Confirmar Cierre de Cuenta
+        </button>
+      </form>
+    </div>
+  {% else %}
+    <div class="no-cuentas">
+      <div style="font-size: 3rem; margin-bottom: 1rem;">📁</div>
+      <h3>No tienes cuentas activas</h3>
+      <p>No hay cuentas disponibles para cerrar en este momento.</p>
+    </div>
+  {% endif %}
+</div>
+
+<script>
+  const cuentaCards = document.querySelectorAll('.cuenta-card.selectable');
+  const btnCerrar = document.getElementById('btnCerrar');
+  const selectedInfo = document.getElementById('selectedInfo');
+  const selectedAccountNumber = document.getElementById('selectedAccountNumber');
+  const cierreForm = document.getElementById('cierreForm');
+
+  cuentaCards.forEach(card => {
+    card.addEventListener('click', function() {
+      const accountId = this.dataset.accountId;
+      const balance = parseFloat(this.dataset.balance);
+      
+      // Verificar que el saldo sea cero
+      if (balance !== 0) {
+        alert('No se puede cerrar esta cuenta. El saldo debe ser cero.');
+        return;
+      }
+      
+      // Remover selección de todas las tarjetas
+      cuentaCards.forEach(c => c.classList.remove('selected'));
+      
+      // Agregar selección a la tarjeta clickeada
+      this.classList.add('selected');
+      
+      // Seleccionar el radio button correspondiente
+      const radio = document.getElementById(`cuenta_${accountId}`);
+      if (radio) {
+        radio.checked = true;
+      }
+      
+      // Mostrar información de cuenta seleccionada
+      const accountNumber = this.querySelector('.cuenta-number').textContent;
+      selectedAccountNumber.textContent = accountNumber;
+      selectedInfo.style.display = 'block';
+      
+      // Habilitar botón de cerrar
+      btnCerrar.disabled = false;
+    });
+  });
+
+  // Validación antes de enviar
+  cierreForm.addEventListener('submit', function(e) {
+    const selectedAccount = document.querySelector('input[name="account_id"]:checked');
+    
+    if (!selectedAccount) {
+      e.preventDefault();
+      alert('Por favor seleccione una cuenta para cerrar.');
+      return false;
+    }
+    
+    const confirmation = confirm(
+      '¿Está seguro que desea cerrar esta cuenta?\n\n' +
+      'Esta acción es permanente y no se puede revertir.\n' +
+      'La cuenta será marcada como CERRADA y no podrá ser reactivada.'
+    );
+    
+    if (!confirmation) {
+      e.preventDefault();
+      return false;
+    }
+  });
+</script>
+{% endblock content %}
