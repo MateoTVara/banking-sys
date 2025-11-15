@@ -15,4 +15,5 @@ urlpatterns = [
     path('apertura-cuenta/', client_portal.apertura_cuenta, name='apertura_cuenta'),
     path('cierre-cuenta/', client_portal.cierre_cuenta, name='cierre_cuenta'),
     path('mis-cuentas/', client_portal.mis_cuentas, name='mis_cuentas'),
+    path('mis-movimientos/', client_portal.mis_movimientos, name='mis_movimientos'),
 ]

@@ -708,3 +708,35 @@ def mis_cuentas(request):
         'total_usd': total_usd,
     }
     return render(request, 'portal/cuenta/mis_cuentas.html', context)
+
+
+@login_required
+def mis_movimientos(request):
+    """
+    Vista para mostrar los últimos 20 movimientos del cliente a través de todas sus cuentas
+    """
+    # Verificar que el usuario pertenece al grupo 'clients'
+    if not request.user.groups.filter(name='clients').exists():
+        messages.error(request, 'No tienes acceso a esta sección.')
+        return redirect('bankingsys:index')
+
+    # Verificar que el usuario tiene un cliente asociado
+    try:
+        client = request.user.client
+    except Exception as e:
+        messages.error(request, 'Tu usuario no tiene un cliente asociado.')
+        return redirect('login')
+
+    # Obtener todas las cuentas del cliente
+    cuentas = Account.objects.filter(client=client)
+    
+    # Obtener los últimos 20 movimientos de todas las cuentas del cliente
+    movimientos = AccountMovement.objects.filter(
+        account__in=cuentas
+    ).select_related('account', 'related_account').order_by('-created_at')[:20]
+    
+    context = {
+        'client': client,
+        'movimientos': movimientos,
+    }
+    return render(request, 'portal/movimientos.html', context)

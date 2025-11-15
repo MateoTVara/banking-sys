@@ -1,0 +1,273 @@
+{% extends 'portal/dashboard.html' %}
+{% load static %}
+
+{% block header_title %}
+<h1>Mis Movimientos</h1>
+{% endblock header_title %}
+
+{% block styles %}
+<style>
+  .movimientos-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .movimientos-title {
+    text-align: center;
+    color: #2c3e50;
+    margin-bottom: 2rem;
+    font-size: 2rem;
+  }
+
+  .client-info {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 4px;
+    margin-bottom: 2rem;
+  }
+
+  .client-info h3 {
+    margin-top: 0;
+    color: #34495e;
+    font-size: 1.2rem;
+  }
+
+  .client-info p {
+    margin: 0.5rem 0;
+    color: #555;
+  }
+
+  .movimientos-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .movimiento-card {
+    background-color: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    transition: box-shadow 0.3s ease;
+  }
+
+  .movimiento-card:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .movimiento-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #f0f0f0;
+    padding-bottom: 0.75rem;
+  }
+
+  .movimiento-type {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: #2c3e50;
+  }
+
+  .movimiento-date {
+    color: #7f8c8d;
+    font-size: 0.9rem;
+  }
+
+  .movimiento-body {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+  }
+
+  .movimiento-field {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .movimiento-label {
+    font-size: 0.85rem;
+    color: #7f8c8d;
+    margin-bottom: 0.25rem;
+  }
+
+  .movimiento-value {
+    font-size: 1rem;
+    color: #2c3e50;
+    font-weight: 500;
+  }
+
+  .movimiento-amount {
+    font-size: 1.3rem;
+    font-weight: 700;
+  }
+
+  .amount-positive {
+    color: #27ae60;
+  }
+
+  .amount-negative {
+    color: #e74c3c;
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+
+  .badge-deposit {
+    background-color: #d4edda;
+    color: #155724;
+  }
+
+  .badge-withdrawal {
+    background-color: #f8d7da;
+    color: #721c24;
+  }
+
+  .badge-transfer {
+    background-color: #d1ecf1;
+    color: #0c5460;
+  }
+
+  .badge-renewal {
+    background-color: #fff3cd;
+    color: #856404;
+  }
+
+  .badge-cancellation {
+    background-color: #f8d7da;
+    color: #721c24;
+  }
+
+  .badge-closure {
+    background-color: #e2e3e5;
+    color: #383d41;
+  }
+
+  .no-movimientos {
+    text-align: center;
+    padding: 3rem;
+    color: #7f8c8d;
+  }
+
+  .no-movimientos i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    display: block;
+  }
+
+  .description-field {
+    grid-column: 1 / -1;
+    margin-top: 0.5rem;
+  }
+
+  .description-value {
+    color: #555;
+    font-style: italic;
+  }
+</style>
+{% endblock styles %}
+
+{% block content %}
+<div class="movimientos-container">
+  <h2 class="movimientos-title">Últimos 20 Movimientos</h2>
+
+  <div class="client-info">
+    <h3>Cliente: {{ client.full_name }}</h3>
+    <p><strong>DNI:</strong> {{ client.dni }}</p>
+  </div>
+
+  {% if movimientos %}
+    <div class="movimientos-list">
+      {% for movimiento in movimientos %}
+        <div class="movimiento-card">
+          <div class="movimiento-header">
+            <div class="movimiento-type">
+              <span class="badge badge-{{ movimiento.movement_type }}">
+                {{ movimiento.get_movement_type_display }}
+              </span>
+            </div>
+            <div class="movimiento-date">
+              {{ movimiento.created_at|date:"d/m/Y H:i" }}
+            </div>
+          </div>
+
+          <div class="movimiento-body">
+            <div class="movimiento-field">
+              <span class="movimiento-label">Cuenta</span>
+              <span class="movimiento-value">{{ movimiento.account.account_number }}</span>
+            </div>
+
+            <div class="movimiento-field">
+              <span class="movimiento-label">Tipo de Cuenta</span>
+              <span class="movimiento-value">{{ movimiento.account.get_account_type_display }}</span>
+            </div>
+
+            <div class="movimiento-field">
+              <span class="movimiento-label">Monto</span>
+              <span class="movimiento-value movimiento-amount 
+                {% if movimiento.movement_type == 'deposit' or movimiento.movement_type == 'renewal' %}
+                  amount-positive
+                {% elif movimiento.movement_type == 'withdrawal' or movimiento.movement_type == 'cancellation' or movimiento.movement_type == 'closure' %}
+                  amount-negative
+                {% endif %}">
+                {% if movimiento.movement_type == 'deposit' or movimiento.movement_type == 'renewal' %}+{% elif movimiento.movement_type == 'withdrawal' or movimiento.movement_type == 'cancellation' or movimiento.movement_type == 'closure' %}-{% endif %}
+                {{ movimiento.currency }} {{ movimiento.amount|floatformat:2 }}
+              </span>
+            </div>
+
+            {% if movimiento.related_account %}
+              <div class="movimiento-field">
+                <span class="movimiento-label">
+                  {% if movimiento.movement_type == 'transfer' %}
+                    Cuenta Destino
+                  {% else %}
+                    Cuenta Relacionada
+                  {% endif %}
+                </span>
+                <span class="movimiento-value">{{ movimiento.related_account.account_number }}</span>
+              </div>
+            {% endif %}
+
+            {% if movimiento.description %}
+              <div class="movimiento-field description-field">
+                <span class="movimiento-label">Descripción</span>
+                <span class="movimiento-value description-value">{{ movimiento.description }}</span>
+              </div>
+            {% endif %}
+
+            {% if movimiento.origin_of_funds %}
+              <div class="movimiento-field">
+                <span class="movimiento-label">Origen de Fondos</span>
+                <span class="movimiento-value">{{ movimiento.origin_of_funds }}</span>
+              </div>
+            {% endif %}
+
+            {% if movimiento.authorized_key %}
+              <div class="movimiento-field">
+                <span class="movimiento-label">Clave de Autorización</span>
+                <span class="movimiento-value">{{ movimiento.authorized_key }}</span>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="no-movimientos">
+      <i>📊</i>
+      <p>No tienes movimientos registrados aún.</p>
+    </div>
+  {% endif %}
+</div>
+{% endblock content %}
