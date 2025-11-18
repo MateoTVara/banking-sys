@@ -52,6 +52,8 @@ body {
   padding: 8px 12px;
   border-radius: 6px;
   transition: background-color 0.2s ease, color 0.2s ease;
+  text-align: center;
+  align-content: center;
 }
 
 .header-nav .nav-link:hover {
@@ -60,7 +62,7 @@ body {
 }
 
 .header-nav .nav-link.active {
-  background-color: #e0eafc; /* Un azul claro para el activo */
+  background-color: #e0eafc;
   color: #0056b3;
 }
 

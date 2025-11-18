@@ -15,31 +15,28 @@
       
       <!-- Columna Izquierda: Links de Navegación -->
       <nav class="header-nav">
-  <a href="{% url 'portal:dashboard' %}" class="nav-link active">
+  <a href="{% url 'portal:dashboard' %}" class="nav-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
     <span class="nav-text">Inicio</span>
   </a>
-  <a href="{% url 'portal:mis_cuentas' %}" class="nav-link">
-    <span class="nav-text">Mis Cuentas</span>
-  </a>
-  <a href="{% url 'portal:mis_movimientos' %}" class="nav-link">
+  <a href="{% url 'portal:mis_movimientos' %}" class="nav-link {% if request.resolver_match.url_name == 'mis_movimientos' %}active{% endif %}">
     <span class="nav-text">Mis Movimientos</span>
   </a>
-  <a href="{% url 'portal:apertura_cuenta' %}" class="nav-link">
+  <a href="{% url 'portal:apertura_cuenta' %}" class="nav-link {% if request.resolver_match.url_name == 'apertura_cuenta' %}active{% endif %}">
     <span class="nav-text">Abrir Cuenta</span>
   </a>
-  <a href="{% url 'portal:cierre_cuenta' %}" class="nav-link">
+  <a href="{% url 'portal:cierre_cuenta' %}" class="nav-link {% if request.resolver_match.url_name == 'cierre_cuenta' %}active{% endif %}">
     <span class="nav-text">Cerrar Cuenta</span>
   </a>
-  <a href="{% url 'portal:deposito' %}" class="nav-link">
+  <a href="{% url 'portal:deposito' %}" class="nav-link {% if request.resolver_match.url_name == 'deposito' %}active{% endif %}">
     <span class="nav-text">Depósitos</span>
   </a>
-  <a href="{% url 'portal:retiro' %}" class="nav-link">
+  <a href="{% url 'portal:retiro' %}" class="nav-link {% if request.resolver_match.url_name == 'retiro' %}active{% endif %}">
     <span class="nav-text">Retiros</span>
   </a>
-  <a href="{% url 'portal:transferencia' %}" class="nav-link">
+  <a href="{% url 'portal:transferencia' %}" class="nav-link {% if request.resolver_match.url_name == 'transferencia' %}active{% endif %}">
     <span class="nav-text">Transferencia</span>
   </a>
-  <a href="{% url 'portal:cuentas_plazo' %}" class="nav-link">
+  <a href="{% url 'portal:cuentas_plazo' %}" class="nav-link {% if request.resolver_match.url_name == 'cuentas_plazo' or request.resolver_match.url_name == 'cancelar_plazo' or request.resolver_match.url_name == 'renovar_plazo' %}active{% endif %}">
     <span class="nav-text">Cuentas a Plazo</span>
   </a>
 </nav>

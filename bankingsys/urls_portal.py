@@ -4,7 +4,7 @@ from .views import client_portal
 app_name = 'portal'
 
 urlpatterns = [
-    path('', client_portal.portal_dashboard, name='dashboard'),
+    path('', client_portal.mis_cuentas, name='dashboard'),
     path('deposito/', client_portal.portal_deposito, name='deposito'),
     path('retiro/', client_portal.portal_retiro, name='retiro'),
     path('transferencia/', client_portal.portal_transferencia, name='transferencia'),
