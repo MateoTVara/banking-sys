@@ -25,6 +25,7 @@ class ExchangeRateRequiredMiddleware:
             '/public/',  # Portal de clientes no requiere tipo de cambio
             '/login/',
             '/logout/',
+            '/unauthorized/',  # Evitar loop de redirección
         ]
         
         # También exentar la ruta de configuración de tipo de cambio
@@ -38,6 +39,11 @@ class ExchangeRateRequiredMiddleware:
 
         # Verifica si el usuario está autenticado
         if not request.user.is_authenticated:
+            response = self.get_response(request)
+            return response
+
+        # Los clientes no necesitan tipo de cambio (solo usan /public/)
+        if request.user.groups.filter(name='clients').exists():
             response = self.get_response(request)
             return response
 
@@ -96,14 +102,15 @@ class ClientGroupRestrictionMiddleware:
             '/static/',
             '/media/',
             '/admin/',
+            '/favicon.ico',
         ]
         
         # Solo aplica si el usuario está autenticado
         if request.user.is_authenticated:
             # Verifica si el usuario pertenece al grupo 'clients'
             if request.user.groups.filter(name='clients').exists():
-                # Permitir acceso a /public/ y URLs exentas
-                if path.startswith('/public/') or any(path.startswith(url) for url in exempt_urls):
+                # Permitir acceso a /public/, raíz (/) y URLs exentas
+                if path == '/' or path.startswith('/public/') or any(path.startswith(url) for url in exempt_urls):
                     return self.get_response(request)
                 # Bloquear acceso a /management/ y otras rutas
                 return redirect('/unauthorized/')

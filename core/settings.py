@@ -52,8 +52,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'bankingsys.middleware.LoginRequiredMiddleware',
+    'bankingsys.middleware.ClientGroupRestrictionMiddleware',  # Debe ir antes de ExchangeRateRequiredMiddleware
     'bankingsys.middleware.ExchangeRateRequiredMiddleware',
-    'bankingsys.middleware.ClientGroupRestrictionMiddleware',
 ]
 
 ROOT_URLCONF = 'core.urls'
@@ -123,6 +123,11 @@ USE_I18N = True
 
 USE_TZ = True
 
+# Session settings
+SESSION_COOKIE_AGE = 86400  # 24 horas en segundos
+SESSION_SAVE_EVERY_REQUEST = True  # Actualiza la sesión en cada request
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+SESSION_COOKIE_HTTPONLY = True  # Seguridad adicional
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/

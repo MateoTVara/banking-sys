@@ -16,6 +16,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.http import HttpResponse
+from django.views.generic.base import RedirectView
 from bankingsys.views import login_view, logout_view, unauthorized_view
 from bankingsys.views.root import root_redirect
 
@@ -27,4 +29,5 @@ urlpatterns = [
     path('unauthorized/', unauthorized_view, name='unauthorized'),
     path('management/', include('bankingsys.urls')),
     path('public/', include('bankingsys.urls_portal')),
+    path('favicon.ico', RedirectView.as_view(url='/static/favicon.ico', permanent=True)),
 ]
